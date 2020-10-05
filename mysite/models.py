@@ -47,6 +47,7 @@ class measure_items(models.Model):
     lower_limit = models.FloatField(max_length=20)#量測數值上限
     specification_center = models.FloatField(max_length=20)#量測數值中心
     number = (("1", "1"), ("3", "3"), ("5", "5"), ("7", "7"))
+    measure_points = models.CharField(max_length=20)
     measure_number = models.CharField(choices=number, max_length= 5)#量測次數
     Decimal = ((0.01, 0.01), (0.001, 0.001), (0.0001, 0.0001),)#浮點數問題
     decimal_piaces = models.FloatField(choices=Decimal)#量測小數點位數
@@ -62,6 +63,7 @@ class measure_values(models.Model):
     unit = (('mm', 'mm'), ('in', 'in'),)
     measure_project = models.ForeignKey(project, on_delete=models.CASCADE)
     measure_name = models.ForeignKey(measure_items, on_delete=models.CASCADE)
+    measure_man = models.CharField(max_length=10)
     measure_number = models.CharField(max_length=200)
     measure_value = models.FloatField(max_length=20)
     measure_unit = models.CharField(choices=unit, max_length=5)
