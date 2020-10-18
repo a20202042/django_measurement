@@ -11,38 +11,31 @@ def index(request):
 
 def project_form(request):
     project_form = forms.Project()
-    try:
-        if request.method == 'POST':
-            project_form = forms.Project(request.POST)
-            if project_form.is_valid():
-                project_form.save()
-                return HttpResponseRedirect('/form_work_order')
-            else:
-                pass
-    except:
-        pass
+    if request.method == 'POST':
+        project_form = forms.Project(request.POST)
+        if project_form.is_valid():
+            project_form.save()
+            return HttpResponseRedirect('/form_work_order')
     return render(request, 'form/form_project.html', locals())
+
 def work_order(request):
     work_order_form = forms.Work_order()
-    try:
-        if request.method == 'POST':
-            work_order_form = forms.Work_order(request.POST)
-            if work_order_form.is_valid():
-                work_order_form.save()
-                print('ok')
-                return HttpResponseRedirect('/form_work_order')
-    except:pass
+    if request.method == 'POST':
+        work_order_form = forms.Work_order(request.POST)
+        if work_order_form.is_valid():
+            work_order_form.save()
+            print('ok')
+            return HttpResponseRedirect('/form_measure_tool')
     return render(request, 'form/from_work_order_create.html', locals())
 
 def measure_tool(request):
     measure_tool_form = forms.measure_tool()
-    try:
-        if request.method == 'POST':
-            measure_tool_form = forms.measure_tool(request.POST)
+    if request.method == 'POST':
+        measure_tool_form = forms.measure_tool(request.POST)
+        if measure_tool_form.is_valid():
             measure_tool_form.save()
             print('ok')
-            return HttpResponseRedirect('/form_measure_tool')
-    except:pass
+        return HttpResponseRedirect('/form_measure_item')
     return render(request, 'form/form_measure_tool.html', locals())
 
 def measure_item(request):
