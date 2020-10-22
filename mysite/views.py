@@ -8,6 +8,13 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def index(request):
     return render(request, 'index.html', locals())
+def project_display(requset, x=None):
+    projects = models.project.objects.all()
+    for p in projects:
+        print(p.project_create_date)
+    if x != None:
+        print(x)
+    return render(requset, 'project_display/project_display.html', locals())
 
 def project_form(request):
     project_form = forms.Project()

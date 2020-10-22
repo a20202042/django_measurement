@@ -1,0 +1,27 @@
+{% load static %}
+<script>
+    function go_Delet(){
+    var x = 0;}
+</script>
+<div>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th scope="col"> 專案名稱 </th>
+            <th scope="col">建立時間</th>
+            <th scope="col">建立人</th>
+            <th scope="col">備註</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for p in projects %}
+            <tr>
+                <td>{{ p.project_name }} </td>
+                <td>{{ p.project_create_date }} </td>
+                <td>{{ p.founder_name }} </td>
+                <td>{{ p.remake }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
