@@ -1,0 +1,55 @@
+{% load static %}
+<div>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th scope="col">量具名稱</th>
+            <th scope="col">專案名稱</th>
+            <th scope="col">量測項目名稱</th>
+            <th scope="col">量測數值上限</th>
+            <th scope="col">量測數值下限</th>
+            <th scope="col">量測數值中心</th>
+            <th scope="col">量測次數</th>
+            <th scope="col">量測點數</th>
+            <th scope="col">量測小數點位數</th>
+            <th scope="col">量測單位</th>
+            <th scope="col">部位圖片</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for m in item %}
+            <tr>
+                <td>{{ m.project_measure }} </td>
+                <td>{{ m.too_name }} </td>
+                <td>{{ m.measure_unit }} </td>
+                <td>{{ m.measurement_items }}</td>
+                <td>{{ m.upper_limit }}</td>
+                <td>{{ m.lower_limit }}</td>
+                <td>{{ m.specification_center }}</td>
+                <td>{{ m.measure_points }}</td>
+                <td>{{ m.measure_number }}</td>
+                <td>{{ m.decimal_piaces }}</td>
+                <td>
+                    <button type="button" onclick=go_delet({{ m.id }})>刪除</button>
+                    <button type="button" >修改</button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+    function go_delet(name){
+        var id = name
+        if (name === "") {
+            window.location = '';
+        }
+        else {
+            var url = "/delet/" + id
+            window.location = url;
+        }
+        {#window.location = "/"#}
+        {#跳至網址#}
+    }
+</script>

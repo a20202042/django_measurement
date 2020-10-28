@@ -9,13 +9,22 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 def index(request):
     return render(request, 'index.html', locals())
-def project_display(requset, x=None):
+def project_display_project(requset, x=None):
     projects = models.project.objects.all()
-    # for p in projects:
-    #     print(p.project_create_date)
-    # if x != None:
-    #     print(x)
-    return render(requset, 'project_display/project_display.html', locals())
+    return render(requset, 'project_display/project_display_project.html', locals())
+
+def project_display_work_order(requset, x=None):
+    work_order = models.measurement_work_order_create.objects.all()
+    return render(requset, 'project_display/project_display_work_order.html', locals())
+
+def project_display_tool(requset, x=None):
+    tool = models.measuring_tool.objects.all()
+    return render(requset, 'project_display/project_display_tool.html', locals())
+
+def project_display_item(requset, x=None):
+    item = models.measure_items.objects.all()
+    return render(requset, 'project_display/project_display_item.html', locals())
+
 def delet(requset, id=None):
     projects = models.project.objects.all()
     if id:
@@ -27,7 +36,7 @@ def delet(requset, id=None):
         except:
             id = None
             print("資料未刪除")
-    return redirect('/project_display')
+    return redirect('/project_display/project')
 
 def project_form(request):
     project_form = forms.Project()

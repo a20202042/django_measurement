@@ -8,26 +8,26 @@
         <p>Production line cloud measurement management system</p>
     </h1>
         <h3>
-            {% if request.path == "/form_project/" %}
-                <a href="/form_project/" class="button primary">專案名稱</a>
+            {% if request.path == "/project_display/project/" %}
+                <a href="/project_display/project/" class="button primary">專案名稱</a>
             {% else %}
-                <a href="/project_display/" class="button">專案名稱</a>
+                <a href="/project_display/project/" class="button">專案名稱</a>
             {% endif %}
-{#            {% if request.path == "/form_work_order/" %}#}
-{#                <a href="/form_work_order/" class="button primary">專案工單</a>#}
-{#            {% else %}#}
-{#                <a href="/form_work_order/" class="button">專案工單</a>#}
-{#            {% endif %}#}
-{#            {% if request.path == "/form_measure_tool/" %}#}
-{#                <a href="/form_measure_tool/" class="button primary">量具名稱</a>#}
-{#            {% else %}#}
-{#                <a href="/form_measure_tool/" class="button">量具名稱</a>#}
-{#            {% endif %}#}
-{#            {% if request.path == "/form_measure_item/" %}#}
-{#                <a href="/form_measure_item/" class="button primary">量測項目</a>#}
-{#            {% else %}#}
-{#                 <a href="/form_measure_item/" class="button">量測項目</a>#}
-{#            {% endif %}#}
+            {% if request.path == "/project_display/work_order/" %}
+                <a href="/project_display/work_order/" class="button primary">專案工單</a>
+            {% else %}
+                <a href="/project_display/work_order/" class="button">專案工單</a>
+            {% endif %}
+            {% if request.path == "/project_display/tool/" %}
+                <a href="/project_display/tool/" class="button primary">量具名稱</a>
+            {% else %}
+                <a href="/project_display/tool/" class="button">量具名稱</a>
+            {% endif %}
+            {% if request.path == "/project_display/item/" %}
+                <a href="/project_display/item/" class="button primary">量測項目</a>
+            {% else %}
+                <a href="/project_display/item/" class="button">量測項目</a>
+            {% endif %}
     </h3>
     </div>
 </header>
