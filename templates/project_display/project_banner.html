@@ -1,8 +1,4 @@
 {% load static %}
-<script>
-    function go_Delet(){
-    var x = 0;}
-</script>
 <div>
     <table class="table table-bordered">
         <thead>
@@ -20,8 +16,26 @@
                 <td>{{ p.project_create_date }} </td>
                 <td>{{ p.founder_name }} </td>
                 <td>{{ p.remake }}</td>
+                <td>
+                    <button type="button" onclick=go_delet({{ p.id }})>刪除</button>
+                    <button type="button" >修改</button>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
+<script>
+    function go_delet(name){
+        var id = name
+        if (name === "") {
+            window.location = '';
+        }
+        else {
+            var url = "/delet/" + id
+            window.location = url;
+        }
+        {#window.location = "/"#}
+        {#跳至網址#}
+    }
+</script>

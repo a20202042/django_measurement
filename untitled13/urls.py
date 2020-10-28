@@ -28,5 +28,6 @@ urlpatterns = [
     path('form_work_order/', views.work_order),
     path('form_measure_tool/', views.measure_tool),
     path('form_measure_item/', views.measure_item),
-    path('project_display', views.project_display),
+    path('project_display/', views.project_display),
+    path('delet/<str:id>', views.delet),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

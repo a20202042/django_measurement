@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from mysite import models,forms
+from django.shortcuts import redirect
 from django.http import HttpResponse, HttpResponseRedirect
 import base64, os
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -10,11 +11,23 @@ def index(request):
     return render(request, 'index.html', locals())
 def project_display(requset, x=None):
     projects = models.project.objects.all()
-    for p in projects:
-        print(p.project_create_date)
-    if x != None:
-        print(x)
+    # for p in projects:
+    #     print(p.project_create_date)
+    # if x != None:
+    #     print(x)
     return render(requset, 'project_display/project_display.html', locals())
+def delet(requset, id=None):
+    projects = models.project.objects.all()
+    if id:
+        try:
+            post = models.project.objects.get(id=id)
+            print(post)
+            post.delete()
+            print("刪除資料")
+        except:
+            id = None
+            print("資料未刪除")
+    return redirect('/project_display')
 
 def project_form(request):
     project_form = forms.Project()
