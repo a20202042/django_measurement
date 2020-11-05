@@ -1,12 +1,13 @@
 {% load static %}
 <div>
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="project_table">
         <thead>
         <tr>
-            <th scope="col"> 專案名稱 </th>
+            <th scope="col"> 專案名稱</th>
             <th scope="col">建立時間</th>
             <th scope="col">建立人</th>
             <th scope="col">備註</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -17,29 +18,19 @@
                 <td>{{ p.founder_name }} </td>
                 <td>{{ p.remake }}</td>
                 <td>
-                    <button type="button" onclick=go_delet({{ p.id }})>
-                        <span class="glyphicon glyphicon-trash"></span>
-                        刪除</button>
-                    <button type="button" >
+                    <button type="button"
+                            class="btn btn-warning btn-sm js-update-book"
+                            data-url="{% url 'book_update' p.id %}">
+                        <span class="glyphicon glyphicon-trash"></span>刪除
+                    </button>
+                    <button type="button">
                         <span class="glyphicon glyphicon-pencil"></span>
-                        修改</button>
+                        修改
+                    </button>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 </div>
-<script>
-    function go_delet(name){
-        var id = name
-        if (name === "") {
-            window.location = '';
-        }
-        else {
-            var url = "/delet/" + id
-            window.location = url;
-        }
-        {#window.location = "/"#}
-        {#跳至網址#}
-    }
-</script>
+
