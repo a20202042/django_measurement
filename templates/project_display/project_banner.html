@@ -1,36 +1,23 @@
-{% load static %}
-<div>
-    <table class="table table-bordered" id="project_table">
-        <thead>
-        <tr>
-            <th scope="col"> 專案名稱</th>
-            <th scope="col">建立時間</th>
-            <th scope="col">建立人</th>
-            <th scope="col">備註</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for p in projects %}
-            <tr>
-                <td>{{ p.project_name }} </td>
-                <td>{{ p.project_create_date }} </td>
-                <td>{{ p.founder_name }} </td>
-                <td>{{ p.remake }}</td>
-                <td>
-                    <button type="button"
-                            class="btn btn-warning btn-sm js-update-book"
-                            data-url="{% url 'book_update' p.id %}">
-                        <span class="glyphicon glyphicon-trash"></span>刪除
-                    </button>
-                    <button type="button">
-                        <span class="glyphicon glyphicon-pencil"></span>
-                        修改
-                    </button>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+{% for p in projects %}
+    <tr>
+        <td>{{ p.project_name }} </td>
+        <td>{{ p.project_create_date }} </td>
+        <td>{{ p.founder_name }} </td>
+        <td>{{ p.remake }}</td>
+        <td>
+            <button type="button"
+                    class="btn  js-update-project"
+                    data-url="{% url 'project_delet' p.id %}">
+                <span class="glyphicon glyphicon-trash"></span>刪除
+            </button>
+            <button type="button"
+                    class="btn js-update-project"
+                    data-url="{% url 'update_project' p.id %}">
+                <span class="glyphicon glyphicon-pencil"></span>
+                修改
+            </button>
+        </td>
+    </tr>
+{% endfor %}
+
 

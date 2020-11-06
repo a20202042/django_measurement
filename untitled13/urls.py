@@ -33,4 +33,6 @@ urlpatterns = [
     path('project_display/tool/', views.project_display_tool),
     path('project_display/item/', views.project_display_item),
     path('delet/<str:id>', views.delet),
+    path('delet/project/<str:id>', views.delet_project, name='project_delet'),
+    path('update/project/<str:id>', views.update_project, name='update_project')
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

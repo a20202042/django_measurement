@@ -1,29 +1,39 @@
 from django.shortcuts import render
-from mysite import models,forms
+from mysite import models, forms
 from django.shortcuts import redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.template.loader import render_to_string
 import base64, os
+from django.shortcuts import get_object_or_404
+
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+
 
 # Create your views here.
 
 def index(request):
     return render(request, 'index.html', locals())
+
+
 def project_display_project(requset, x=None):
     projects = models.project.objects.all()
     return render(requset, 'project_display/project_display_project.html', locals())
+
 
 def project_display_work_order(requset, x=None):
     work_order = models.measurement_work_order_create.objects.all()
     return render(requset, 'project_display/project_display_work_order.html', locals())
 
+
 def project_display_tool(requset, x=None):
     tool = models.measuring_tool.objects.all()
     return render(requset, 'project_display/project_display_tool.html', locals())
 
+
 def project_display_item(requset, x=None):
     item = models.measure_items.objects.all()
     return render(requset, 'project_display/project_display_item.html', locals())
+
 
 def delet(requset, id=None):
     projects = models.project.objects.all()
@@ -38,6 +48,50 @@ def delet(requset, id=None):
             print("資料未刪除")
     return redirect('/project_display/project')
 
+
+def delet_project(request, id):
+    project = models.project.objects.get(id=id)
+    data = dict()
+    if request.method == 'POST':
+        project.delete()
+        data['form_is_valid'] = True
+        projects = models.project.objects.all()
+        data['html_project_list'] = render_to_string(
+            'project_display/project_banner.html',
+            {'projects': projects})
+    else:
+        context = {'project': project,
+                   'project_name': project.project_name,
+                   'founder_name': project.founder_name,
+                   'time': project.project_create_date,
+                   'remake': project.remake}
+        data['html_form'] = render_to_string(
+            'project_display/delet/delet_project.html',
+            context, request=request)
+    return JsonResponse(data)
+
+
+def update_project(request, id):
+    project = get_object_or_404(models.project, id=id)
+    data = dict()
+    if request.method == 'POST':
+        form = forms.Project(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            projects = models.project.objects.all()
+            data['html_project_list'] = render_to_string(
+                'project_display/project_banner.html',
+                {'projects': projects})
+    else:
+        form = forms.Project(instance=project)
+    context = {'form': form}
+    data['html_form'] = render_to_string(
+        'project_display/update/update_project.html',
+        context, request=request)
+    return JsonResponse(data)
+
+
 def project_form(request):
     project_form = forms.Project()
     if request.method == 'POST':
@@ -46,6 +100,7 @@ def project_form(request):
             project_form.save()
             return HttpResponseRedirect('/form_work_order')
     return render(request, 'form/form_project.html', locals())
+
 
 def work_order(request):
     work_order_form = forms.Work_order()
@@ -57,6 +112,7 @@ def work_order(request):
             return HttpResponseRedirect('/form_measure_tool')
     return render(request, 'form/from_work_order_create.html', locals())
 
+
 def measure_tool(request):
     measure_tool_form = forms.measure_tool()
     if request.method == 'POST':
@@ -66,6 +122,7 @@ def measure_tool(request):
             print('ok')
         return HttpResponseRedirect('/form_measure_item')
     return render(request, 'form/form_measure_tool.html', locals())
+
 
 def measure_item(request):
     measure_item_form = forms.measure_item()
