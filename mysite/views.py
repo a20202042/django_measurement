@@ -48,6 +48,24 @@ def delet(requset, id=None):
             print("資料未刪除")
     return redirect('/project_display/project')
 
+def delet_work_order(request, id):
+    work_order = models.measurement_work_order_create.objects.get(id=id)
+    data = dict()
+    if request.method == 'POST':
+        work_order.delete()
+        data['form_is_valid'] = True
+        work_orders = models.measurement_work_order_create.objects.all()
+        data['html_work_order_list'] = render_to_string(
+            'project_display/work_order_banner.html',
+            {'work_order': work_orders})
+    else:
+        print(work_order.id)
+        context = {'work_order': work_order.sor_no}
+        data['html_form'] = render_to_string(
+            'project_display/delet/delet_work_order.html',
+            context, request=request)
+
+    return JsonResponse(data)
 
 def delet_project(request, id):
     project = models.project.objects.get(id=id)

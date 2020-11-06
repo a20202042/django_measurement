@@ -1,54 +1,22 @@
-{% load static %}
-<div>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th scope="col"> 專案名稱 </th>
-            <th scope="col">工單</th>
-            <th scope="col">件號</th>
-            <th scope="col">件數</th>
-            <th scope="col">材料</th>
-            <th scope="col">機台名稱</th>
-            <th scope="col">批號</th>
-            <th scope="col">班別</th>
-            <th scope="col">量測人員</th>
-            <th scope="col">備註</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for w in work_order %}
-            <tr>
-                <td>{{ w.project_measure }} </td>
-                <td>{{ w.sor_no }} </td>
-                <td>{{ w.part_no }} </td>
-                <td>{{ w.number_of_parts }}</td>
-                <td>{{ w.materials }}</td>
-                <td>{{ w.manufacturing_machine }}</td>
-                <td>{{ w.batch_number }}</td>
-                <td>{{ w.Class }}</td>
-                <td>{{ w.inspector }}</td>
-                <td>{{ w.remake }}</td>
-                <td>
-                    <button type="button" onclick=go_delet({{ m.id }})>刪除</button>
-                    <button type="button" >修改</button>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-<script>
-    function go_delet(name){
-        var id = name
-        if (name === "") {
-            window.location = '';
-        }
-        else {
-            var url = "/delet/" + id
-            window.location = url;
-        }
-        {#window.location = "/"#}
-        {#跳至網址#}
-    }
-</script>
+{% for w in work_order %}
+    <tr>
+        <td>{{ w.project_measure }} </td>
+        <td>{{ w.sor_no }} </td>
+        <td>{{ w.part_no }} </td>
+        <td>{{ w.number_of_parts }}</td>
+        <td>{{ w.materials }}</td>
+        <td>{{ w.manufacturing_machine }}</td>
+        <td>{{ w.batch_number }}</td>
+        <td>{{ w.Class }}</td>
+        <td>{{ w.inspector }}</td>
+        <td>{{ w.remake }}</td>
+        <td>
+            <button type="button"
+                    class="btn  js-delet-work-order"
+                    data-url="{% url 'work_order_delet' w.id %}">
+                <span class="glyphicon glyphicon-trash"></span>刪除
+            </button>
+            <button type="button">修改</button>
+        </td>
+    </tr>
+{% endfor %}
