@@ -59,8 +59,7 @@ def delet_work_order(request, id):
             'project_display/work_order_banner.html',
             {'work_order': work_orders})
     else:
-        print(work_order.id)
-        context = {'work_order': work_order.sor_no}
+        context = {'work_ord': work_order.sor_no, 'id': work_order.id}
         data['html_form'] = render_to_string(
             'project_display/delet/delet_work_order.html',
             context, request=request)
@@ -86,6 +85,27 @@ def delet_project(request, id):
         data['html_form'] = render_to_string(
             'project_display/delet/delet_project.html',
             context, request=request)
+    return JsonResponse(data)
+
+def update_work_order(request, id):
+    # work_order = get_object_or_404(models.measurement_work_order_create, id=id)
+    work_order = models.measurement_work_order_create.objects.get(id=id)
+    data = dict()
+    if request.method == 'POST':
+        form = forms.Work_order(request.POST, instance=work_order)
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            work_orders = models.measurement_work_order_create.objects.all()
+            data['html_work_order_list'] = render_to_string(
+                'project_display/work_order_banner.html',
+                {'work_order': work_orders})
+    else:
+        form = forms.Work_order(instance=work_order)
+    context = {'form': form}
+    data['html_form'] = render_to_string(
+        'project_display/update/update_work_order.html',
+        context, request=request)
     return JsonResponse(data)
 
 

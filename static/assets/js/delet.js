@@ -95,8 +95,8 @@ $(function () {
     // $("#modal-book").on("submit", ".js-book-create-form", saveForm);
     //
     // // Update book
-    // $("#project_table").on("click", ".js-update-project", loadForm);
-    // $("#modal").on("submit", ".js-project-update-form", saveForm);
+    $("#work_order").on("click", ".js-update-work-order", loadForm);
+    $("#modal").on("submit", ".js-work-order-update-form", saveForm);
 
     // Delete book
     $("#work_order").on("click", ".js-delet-work-order", loadForm);

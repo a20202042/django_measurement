@@ -1,5 +1,5 @@
 {##<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">#}
-<form method="post" action='{% url 'work_order_delet' 10 %}' class="js-delet-work-order-modal">
+<form method="post" action='{% url 'work_order_delet' id  %}' class="js-delet-work-order-modal">
     {% csrf_token %}
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"
