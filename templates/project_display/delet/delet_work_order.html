@@ -9,20 +9,27 @@
         <h2 class="modal-title" style="">工單刪除</h2>
     </div>
     <div class="modal-body" style="text-align: left">
-        <h2 class="lead" style="font-size:160%"> 確認刪除工單：</h2>
+        <h2 class="lead" style="font-size:160%"> 刪除工單：</h2>
         <p style="font-size: large">
-{#            專案名稱：{{ project_name }}<br>#}
+            專案名稱：{{ project }}<br>
+            工單：{{ work_order }}<br>
+            件號：{{ number_of_parts }}<br>
+            件數：{{ materials}}<br>
+            材料：{{ materials }}<br>
+            機台名稱：{{ manufacturing_machine }}<br>
+            班別：{{ batch_number }}<br>
+            量測人員：{{inspector }}<br>
+            備註：{{ remake }}<br>
         </p>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn " data-dismiss="modal"
-{#                style="box-shadow: none" 外框隱藏#}
-        >
-            Close
+{#                style="box-shadow: none" 外框隱藏#}>
+            關閉
         </button>
         <button type="submit" class="btn"
                 style="color:whitesmoke">
-            Delete book
+            刪除工單
         </button>
     </div>
 </form>

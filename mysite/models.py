@@ -69,6 +69,7 @@ class measure_values(models.Model):
     measure_unit = models.CharField(choices=unit, max_length=5)
     measure_time = models.DateTimeField()
     measure_tool = models.ForeignKey(measuring_tool, on_delete=models.CASCADE)
+    time_now = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return str(self.measure_name)

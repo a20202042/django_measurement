@@ -1,10 +1,10 @@
 {% for p in projects %}
-    <tr>
-        <td>{{ p.project_name }} </td>
-        <td>{{ p.project_create_date }} </td>
-        <td>{{ p.founder_name }} </td>
-        <td>{{ p.remake }}</td>
-        <td>
+    <tr >
+        <td style="vertical-align: revert">{{ p.project_name }} </td>
+        <td style="vertical-align: revert">{{ p.project_create_date }} </td>
+        <td style="vertical-align: revert">{{ p.founder_name }} </td>
+        <td style="vertical-align: revert">{{ p.remake }}</td>
+        <td style="vertical-align: revert">
             <button type="button"
                     class="btn  js-delet-project"
                     data-url="{% url 'project_delet' p.id %}">

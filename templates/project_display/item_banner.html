@@ -1,61 +1,40 @@
 {% load static %}
-<div>
-{% csrf_token %}
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th scope="col">量具名稱</th>
-            <th scope="col">專案名稱</th>
-            <th scope="col">量測項目名稱</th>
-            <th scope="col">量測數值上限</th>
-            <th scope="col">量測數值下限</th>
-            <th scope="col">量測數值中心</th>
-            <th scope="col">量測次數</th>
-            <th scope="col">量測點數</th>
-            <th scope="col">量測小數點位數</th>
-            <th scope="col">量測單位</th>
-            <th scope="col">部位圖片</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for m in item %}
-            <tr align="center" valign="center">
-                <td>{{ m.project_measure }} </td>
-                <td>{{ m.too_name }} </td>
-                <td>{{ m.measure_unit }} </td>
-                <td>{{ m.measurement_items }}</td>
-                <td>{{ m.upper_limit }}</td>
-                <td>{{ m.lower_limit }}</td>
-                <td>{{ m.specification_center }}</td>
-                <td>{{ m.measure_points }}</td>
-                <td>{{ m.measure_number }}</td>
-                <td>{{ m.decimal_piaces }}</td>
-                <td>
-{#                    <figure>#}
-                    <img  src="/static/{{ m.image }}" width='100' height="100" align="center" >
-{#                        <figcaption>{{ m.measurement_items }}</figcaption>#}
-{#                    </figure>#}
-                </td>
-                <td>
-                    <button type="button" onclick=go_delet({{ m.id }}) >刪除</button>
-                    <button type="button" >修改</button>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
-<script>
-    function go_delet(name){
-        var id = name
-        if (name === "") {
-            window.location = '';
-        }
-        else {
-            var url = "/delet/" + id
-            window.location = url;
-        }
-        {#window.location = "/"#}
-        {#跳至網址#}
-    }
+{% for m in item %}
+    <tr align="center" valign="center">
+        <td style="vertical-align: revert">{{ m.project_measure }} </td>
+        <td style="vertical-align: revert">{{ m.too_name }} </td>
+        <td style="vertical-align: revert">{{ m.measure_unit }} </td>
+        <td style="vertical-align: revert">{{ m.measurement_items }}</td>
+        <td style="vertical-align: revert">{{ m.upper_limit }}</td>
+        <td style="vertical-align: revert">{{ m.lower_limit }}</td>
+        <td style="vertical-align: revert">{{ m.specification_center }}</td>
+        <td style="vertical-align: revert">{{ m.measure_points }}</td>
+        <td style="vertical-align: revert">{{ m.measure_number }}</td>
+        <td style="vertical-align: revert">{{ m.decimal_piaces }}</td>
+        <td style="vertical-align: revert">
+            <a href='#modal' id="item_image" onclick="show()" >
+            <img id="js-image" src="/static/{{ m.image }}" width='100' height="100" align="center" alt="Snow">
+            </a>
+        </td>
+        <td style="vertical-align: revert">
+            <button type="button"
+                    class="btn  js-delet-item"
+                    data-url="{% url 'item_delet' m.id %}">
+                <span class="glyphicon glyphicon-trash"></span>刪除
+            </button>
+            <button type="button"
+                    class="btn js-update-item"
+                    data-url="{% url 'update_item' m.id %}">
+                <span class="glyphicon glyphicon-pencil"></span>
+                修改
+            </button>
+        </td>
+    </tr>
+{% endfor %}
+
+<script language="JavaScript">
+    var img = document.getElementById('js-image')
+    img.onclick = function (){
+    alert('1111')
+}
 </script>
