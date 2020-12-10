@@ -1,7 +1,7 @@
 {% load static %}
 <div>
 <section>
-    <form name="my form" method="post">
+    <form name="my form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <table>
             {{ project_form.as_table }}

@@ -4,13 +4,14 @@ from django import forms
 class Project(forms.ModelForm):
     class Meta:
         model = models.project
-        fields = ['project_name', 'project_create_date', 'founder_name', 'remake']
+        fields = ['project_name', 'project_create_date', 'founder_name', 'remake', 'project_image']
     def __init__(self, *args, **kwargs):
         super(Project, self).__init__(*args, **kwargs)
         self.fields['project_name'].label = '專案名稱'
         self.fields['project_create_date'].label = '創建日期'
         self.fields['founder_name'].label = '建立者'
         self.fields['remake'].label = '備註'
+        self.fields['project_image'].label = '專案圖'
     # def clean_project_create_date(self):
     #     project_create_date = self.cleaned_data.get('project_create_date')
     #     if project_create_date != '中文':

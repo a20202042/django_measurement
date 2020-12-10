@@ -1,14 +1,22 @@
 from django.db import models
 import django.utils.timezone as timezone
 import datetime, uuid,re
+
+def upload_path_handler_project(instance, filename):
+    name = str(instance.project_image)
+    x = instance
+    return "project/{id}/{file}".format(id=instance.project_name, file= name)    #儲存路徑和格式
 class project(models.Model):
     project_name = models.CharField(max_length=200)#專案名稱
     project_create_date = models.DateField(default=timezone.now)#專案建立日期
     # https: // www.itread01.com / content / 1545908112.html
     founder_name = models.CharField(max_length=100)#建立人
     remake = models.TextField(max_length=200, blank=True)#備註
+    project_image = models.ImageField(upload_to=upload_path_handler_project)
     def __str__(self):
         return self.project_name
+
+
 
 class measurement_work_order_create(models.Model):
     project_measure = models.ForeignKey(project, on_delete=models.CASCADE)
@@ -69,7 +77,7 @@ class measure_values(models.Model):
     measure_unit = models.CharField(choices=unit, max_length=5)
     measure_time = models.DateTimeField()
     measure_tool = models.ForeignKey(measuring_tool, on_delete=models.CASCADE)
-    time_now = models.DateField(auto_now_add=True)
+    time_now = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.measure_name)

@@ -57,8 +57,8 @@
     TESTER = document.getElementById('tester');
     var Data = {
         type: 'scatter',
-        x: {{ x_data | safe }},{# 1-1 #}
-        y: {{ y_data | safe }}, {# 量測值#}
+        x: ['1-1', '1-2'],{# 1-1 #}
+        y: [2, 4], {# 量測值#}
         mode: 'lines+markers',
         name: 'Value',
         showlegend: true,
@@ -76,8 +76,8 @@
 
     var Viol = {
         type: 'scatter',
-        x: {{ x_exceed_data|safe }},
-        y: {{ y_exceed_data|safe }},
+        x: ['1-1', '1-2'],
+        y: [0, 0],
         mode: 'markers',
         name: 'Violation',
         showlegend: true,
@@ -92,9 +92,9 @@
 
     var CL = {
         type: 'scatter',
-        x: [{{x_max|safe}}, {{ x_min |safe }}, null, {{x_max|safe}}, {{ x_min |safe }}], {# ?-? ---> ?-? #}
-        y: [{{ lower_limit|safe }}, {{ lower_limit|safe }}, null,
-            {{ upper_limit|safe }},  {{ upper_limit|safe }}], {# 下限點二、點一、上限點二、點一 #}
+        x: ['1-1','1-2', null, '1-1', '1-2'], {# ?-? ---> ?-? #}
+        y: [10,10, null,
+            10,10], {# 下限點二、點一、上限點二、點一 #}
         mode: 'lines',
         name: 'LCL/UCL',
         showlegend: true,
@@ -107,8 +107,8 @@
 
     var Centre = { {# 中心線 #}
         type: 'scatter',
-        x: [{{ x_min |safe }}, {{x_max|safe}}],
-        y: [{{y_center}}, {{y_center}}],
+        x: ['1-1', '1-2'],
+        y: [0, 0],
         mode: 'lines',
         name: 'Centre',
         showlegend: true,
@@ -126,7 +126,7 @@
             zeroline: false
         },
         yaxis: {
-            range: [{{ lower_range|safe }}, {{ upper_rande|safe }}], {# 顯示範圍 #}
+            range: [10, 1], {# 顯示範圍 #}
             zeroline: false
         }
     }

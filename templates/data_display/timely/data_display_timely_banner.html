@@ -1,0 +1,149 @@
+{% load static %}
+{% for i in chart_id %}
+    {#    <div class="text-center">#}
+    <div>
+        <img src="/static/{{ i.image }}" class="img-thumbnail" style="width:40em;height:30em;" alt="Responsive image">
+        <div id='{{ i.id }}' style="width:1200px;height:500px;"></div>
+    </div>
+    <div>
+        <div id='test' style="width:1200px;height:500px;"></div>
+    </div>
+    {#    </div>#}
+{% endfor %}
+<script language="JavaScript">
+    function getData() {
+        dataSet = []
+        var rand = d3.random.normal(100, 30)
+        for (var i = 0; i < 7; i++) {
+            var value = Math.round(rand())
+            dataSet.push(value)
+            alert('2')
+        }
+    }
+
+    var trace1 = {
+        x: [0, 1, 2, 3, 4, 5],
+        y: [1.5, 1, 1.3, 0.7, 0.8, 0.9],
+        type: 'scatter'
+    };
+
+    var trace2 = {
+        x: [0, 1, 2, 3, 4, 5],
+        y: [1, 0.5, 0.7, 5.0, 0.3, 0.4],
+        width: [1, 1, 1, 1, 1],
+        type: 'bar'
+    };
+    var layout = {
+        title: 'Number of Graphs Made this Week',
+        font: {
+            family: 'Raleway, sans-serif'
+        },
+        showlegend: false,
+        yaxis: {
+            zeroline: false,
+            gridwidth: 1,
+            range: [0, 10],
+        },
+        bargap: 0
+    };
+
+
+    var data = [trace1, trace2];
+    Plotly.newPlot('test', data, layout);
+
+    var item = {{ all_data|safe }};
+    for (i in item) {
+        TESTER = document.getElementById(item[i]['name']);
+        var Data = {
+            type: 'scatter',
+            x: item[i]['count_x_data'], {# 1-1 #}
+            y: item[i]['count_y_data'], {# 量測值#}
+            mode: 'lines+markers',
+            name: item[i]['data'],
+            showlegend: true,
+            hoverinfo: 'all',
+            line: {
+                color: 'blue',
+                width: 2
+            },
+            marker: {
+                color: 'blue',
+                size: 8,
+                symbol: 'circle'
+            }
+        }
+        var CL = {
+            type: 'scatter',
+            x: item[i]['count_cl_x_data'], {# ?-? ---> ?-? #}
+            y: item[i]['count_cl_y_data'], {# 下限點二、點一、上限點二、點一 #}
+            mode: 'lines',
+            name: item[i]['cl'],
+            showlegend: true,
+            line: {
+                color: 'red',
+                width: 2,
+                dash: 'dash'
+            }
+        }
+        var Viol = {
+            type: 'scatter',
+            x: item[i]['count_viol_x_data'],
+            y: item[i]['count_viol_y_data'],
+            mode: 'markers',
+            name: item[i]['vol'],
+            showlegend: true,
+            marker: {
+                color: 'rgb(255,65,54)',
+                line: {width: 3},
+                opacity: 0.5,
+                size: 12,
+                symbol: 'circle-open'
+            }
+        }
+        var Centre = {
+            {# 中心線 #}
+            type: 'scatter',
+            x: item[i]['count_x_center_data'],
+            y: item[i]['count_y_center_data'],
+            mode: 'lines',
+            name: item[i]['center'],
+            showlegend: true,
+            line: {
+                color: 'grey',
+                width: 2
+            }
+        }
+
+        var data = [Data, Viol, CL, Centre]
+
+        var layout = {
+            title: item[i]['item_name'],
+            xaxis: {
+                zeroline: false
+            },
+            yaxis: {
+                range: item[i]['count_range_x'], {# 顯示範圍 #}
+                zeroline: false
+            }
+        }
+
+        Plotly.newPlot(item[i]['name'], data, layout);
+        console.log(Plotly.BUILD);
+    }
+
+
+    {#var list = {{ a|safe }};#}
+    {#for (i in list) {#}
+    {#    TESTER = document.getElementById(list[i]['id']);#}
+    {#    Plotly.newPlot(TESTER, [{#}
+    {#        x: [0, 2, 3, 4, 5],#}
+    {#        y: list[i]['y']#}
+    {#    }], {#}
+    {#        margin: {t: 0}#}
+    {#    });}#}
+    {#var Dict = {{ a | safe }};#}
+    {#for (i in Dict){#}
+    {#    alert(Dict[i]['id']);}#}
+    {#alert({{ b|safe }})#}
+    {#傳遞引數#}
+</script>

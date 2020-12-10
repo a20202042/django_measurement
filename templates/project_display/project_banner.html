@@ -5,6 +5,11 @@
         <td style="vertical-align: revert">{{ p.founder_name }} </td>
         <td style="vertical-align: revert">{{ p.remake }}</td>
         <td style="vertical-align: revert">
+            <a href='#modal' id="item_image"  >
+            <img id="js-image" src="/static/{{ p.project_image }}" width='100' height="100" align="center" alt="Snow">
+            </a>
+        </td>
+        <td style="vertical-align: revert">
             <button type="button"
                     class="btn  js-delet-project"
                     data-url="{% url 'project_delet' p.id %}">

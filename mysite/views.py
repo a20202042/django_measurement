@@ -35,7 +35,6 @@ def project_display_item(requset, x=None):
     return render(requset, 'project_display/project_display_item.html', locals())
 
 
-#
 # def delet(requset, id=None):
 #     projects = models.project.objects.all()
 #     if id:
@@ -220,7 +219,7 @@ def update_item(request, id):
     item = models.measure_items.objects.get(id=id)
     data = dict()
     if request.method == 'POST':
-        form = forms.measure_item(request.POST, instance=item)
+        form = forms.measure_item(request.POST, request.FILES, instance=item)
         if form.is_valid():
             form.save()
             data['form_is_valid'] = True
@@ -242,7 +241,7 @@ def update_item(request, id):
 def project_form(request):
     project_form = forms.Project()
     if request.method == 'POST':
-        project_form = forms.Project(request.POST)
+        project_form = forms.Project(request.POST, request.FILES)
         if project_form.is_valid():
             project_form.save()
             return HttpResponseRedirect('/form_work_order')
@@ -294,8 +293,8 @@ def measure_item(request):
 
 
 def test(requset):
-    all_data = models.measure_values.objects.filter(measure_name_id=57).values('measure_number', 'measure_value')
-    measure_item_data = models.measure_items.objects.get(id=57)
+    all_data = models.measure_values.objects.filter(measure_name_id=98).values('measure_number', 'measure_value')
+    measure_item_data = models.measure_items.objects.get(id=62)
     x_line = []
     y_line = []
     x_exceed_data = []
@@ -367,7 +366,7 @@ def test(requset):
     data.update({
         'r_x_data': json.dumps(r_x_line), 'r_y_data': json.dumps(r_r_data),
         'r_x_max': json.dumps(r_x_line[-1]), 'r_x_min': json.dumps(r_x_line[0]),
-        'r_r_cl': json.dumps(r_r_cl), 'r_ucl': json.dumps(r_ucl),'r_lcl': json.dumps(r_lcl),
+        'r_r_cl': json.dumps(r_r_cl), 'r_ucl': json.dumps(r_ucl), 'r_lcl': json.dumps(r_lcl),
         'r_upper_range': json.dumps(r_upper_range), 'r_lower_range': json.dumps(r_lower_range)})
 
     # ----------------------------------------------------------------xbar
@@ -425,3 +424,314 @@ def test_1(requset):
     value = {'x': x, 'y': y}
     print('2')
     return JsonResponse(value)
+
+
+def data_display_project(request):
+    time = []
+    project = []
+    data = {}
+    all_data = []
+    value_data = []
+    value_number = int()
+    measure_value = models.measure_values.objects.all()
+    # for i in measure_value:
+    #     value_data.append(i.measure_value)
+    #     value_number = len(value_data)/int(models.measure_items.objects.get(project_measure_id=i.measure_project_id).measure_number)
+    # print(value_number)
+    for i in measure_value:
+        if i.measure_project not in project:
+            data['project'] = i.measure_project.project_name
+            data['project_id'] = i.measure_project.id
+            data['value_update_time'] = i.time_now
+            data['work_order'] = models.measurement_work_order_create.objects.get(
+                project_measure_id=i.measure_project_id).sor_no
+            data['number_of_parts'] = models.measurement_work_order_create.objects.get(
+                project_measure_id=i.measure_project_id).number_of_parts
+            data['founder_name'] = models.project.objects.get(id=i.measure_project_id).founder_name
+            data['measure_man'] = i.measure_man
+            data['project_create_time'] = models.project.objects.get(id=i.measure_project_id).project_create_date
+            data['measure_number'] = value_number
+            print(len(models.measure_values.objects.filter(measure_project_id=i.measure_project_id).values(
+                'measure_name_id')))
+            print(len(
+                models.measure_items.objects.filter(project_measure_id=i.measure_project_id).values('measure_number')))
+            data['number'] = int(len(
+                models.measure_values.objects.filter(measure_project_id=i.measure_project_id).values('measure_name_id')) \
+                                 / len(
+                models.measure_items.objects.filter(project_measure_id=i.measure_project_id).values('measure_number')))
+            time.append(i.time_now)
+            project.append(i.measure_project)
+            # print(len(models.measure_values.objects.filter(measure_project_id=i.measure_project_id))/
+            #           int(models.measure_items.objects.get(project_measure_id=i.measure_project_id).measure_number))
+            all_data.append(data)
+            data = {}
+        else:
+            pass
+    return render(request, 'data_display/data_display_timely.html', locals())
+
+
+def measure_data_display_show(request, id):
+    if request.method == 'GET':
+        print('get')
+    return render(request, 'data_display/data_display_main/data_display_main.html', locals())
+
+
+def display_all_measure_data_chart(request, id):
+    measure_item = models.measure_items.objects.filter(project_measure_id=id).values('id')
+    project_name = models.project.objects.get(id=id).project_name
+    man = models.project.objects.get(id=id).founder_name
+    print(man)
+    create_date = models.project.objects.get(id=id).project_create_date
+    remake = models.project.objects.get(id=id).remake
+    project_imag_url = models.project.objects.get(id=id).project_image
+    measure_value_man_id = models.measure_values.objects.filter(measure_project_id=id).values('measure_man', 'time_now')
+    measure_man = measure_value_man_id[0]['measure_man']
+    update_time = measure_value_man_id[0]['time_now']
+    measure_count = len(models.measure_values.objects.filter(measure_project_id=id).values('measure_value')) \
+                    / int(
+        models.measure_items.objects.filter(project_measure_id=id).values('measure_number')[0]['measure_number'])
+    print(measure_count)
+    project_data = {'project_name ': project_name, 'man': man,
+                    'create_date': create_date, 'remake': remake,
+                    'project_image_url': project_imag_url, 'measure_man': measure_man,
+                    'update_time': update_time, 'number_of_pieces': str(measure_count)}
+
+    all_measure_data = []
+    for item in measure_item:
+        item_name = models.measure_items.objects.get(id=item['id'])
+        all_measure_data.append(item_name)
+    # ----------------------------
+    all_data = []
+    a2_data = {'3': 1.023, '5': 0.577, '7': 0.419}
+    d4_data = {'3': 2.575, '5': 2.115, '7': 1.924}
+    d3_data = {'3': 0, '5': 0, '7': 0.076}
+    for item in measure_item:
+        data = dict()
+        item_id_x = '%s_x' % item['id']
+        item_id_r = '%s_r' % item['id']
+        measure_count = models.measure_items.objects.get(id=item['id']).measure_number
+        item_name = models.measure_items.objects.get(id=item['id']).measurement_items
+        # print(item_name)
+        x_y_data = []  # 每組資料平均值
+        r_y_data = []  # 每組資料全距
+        x_x_viol_data = []
+        x_y_viol_data = []
+        value_data = []
+        all_value_data = []
+        x_x_data = []
+        number = int()
+        measure_value_dcit = models.measure_values.objects.filter(measure_name_id=item['id']). \
+            values('measure_value', 'measure_number')
+        for i in measure_value_dcit:
+            # print(i['measure_value'])
+            value_data.append(i["measure_value"])
+            number = number + 1
+            if number == int(measure_count):
+                number = 0
+                all_value_data.append(value_data)
+                value_data = []
+        measure_number = int(len(measure_value_dcit) / int(measure_count))  # 多少量測次數
+        for i in range(1, measure_number + 1):
+            x_x_data.append(i)
+        for i in all_value_data:
+            x_y_data.append(statistics.mean(i))  # 平均值
+            r_y_data.append(numpy.max(i) - numpy.min(i))
+        r = statistics.mean(r_y_data)
+        x = statistics.mean(x_y_data)
+        a2 = a2_data[str(measure_count)]
+        x_ucl = x + a2 * r  # x上限計算
+        x_lcl = x - a2 * r  # x下限計算
+        for i in x_y_data:
+            if i < x_lcl or i > x_ucl:
+                x_y_viol_data.append(i)
+                x_x_viol_data.append(x_x_data[x_y_data.index(i)])
+        x_x_cl_data = [x_x_data[0], x_x_data[-1], '', x_x_data[0], x_x_data[-1]]
+        x_y_cl_data = [x_ucl, x_ucl, '', x_lcl, x_lcl]
+        x_x_center_data = [x_x_data[0], x_x_data[-1]]
+        x_y_center_data = [x, x]
+        x_y_range = [x_lcl - (x_ucl - x_lcl) / 3, x_ucl + (x_ucl - x_lcl) / 3]
+        # --------------------------------------------
+        d4 = d4_data[str(measure_count)]
+        d3 = d3_data[str(measure_count)]
+        r_ucl = d4 * r
+        r_lcl = d3 * r
+        r_x_cl_data = [x_x_data[0], x_x_data[-1], '', x_x_data[0], x_x_data[-1]]
+        r_y_cl_data = [r_ucl, r_ucl, '', r_lcl, r_lcl]
+        r_x_viol_data = []
+        r_y_viol_data = []
+        r_x_center_data = [x_x_data[0], x_x_data[-1]]
+        r_y_range_data = [0, r_ucl + r_ucl / 10]
+        if r_lcl == 0:
+            r_y_center_data = [0, 0]
+        else:
+            r_y_center_data = [statistics.mean(r_y_data)]
+        for i in r_y_data:
+            if i > r_ucl or i < r_lcl:
+                r_x_viol_data.append(x_x_data[r_y_data.index(i)])
+                r_y_viol_data.append(i)
+        # ----------------------------------------------
+        count_x_data = []
+        count_y_data = []
+        count_x_data = []
+        count_y_data = []
+        count_viol_x_data = []
+        count_viol_y_data = []
+        count_x_center_data = []
+        count_y_center_data = []
+        count_viol_x_data = []
+        count_viol_y_data = []
+        count_range_x = []
+        item_upper = float(models.measure_items.objects.get(id=item['id']).upper_limit)
+        item_lower = float(models.measure_items.objects.get(id=item['id']).lower_limit)
+        item_center = float(models.measure_items.objects.get(id=item['id']).specification_center)
+        count_all_data = models.measure_values.objects.filter(measure_name_id=item['id']). \
+            values('measure_value', 'measure_number')
+        for i in count_all_data:
+            # print(item_2['measure_value'], item_2['measure_number'])
+            count_x_data.append(i['measure_number'])
+            count_y_data.append(i['measure_value'])
+            if i['measure_value'] > item_upper or i['measure_value'] < item_lower:
+                count_viol_x_data.append(i['measure_number'])
+                count_viol_y_data.append(i['measure_value'])
+        count_x_center_data = [count_x_data[0], count_x_data[-1]]  # 中心線1-1
+        count_y_center_data = [item_center, item_center]  # 中心線數值
+        count_cl_x_data = [count_x_data[0], count_x_data[-1], '', count_x_data[0], count_x_data[-1]]
+        count_cl_y_data = [item_upper, item_upper, '', item_lower, item_lower]
+        count_range_x = [item_lower - (item_upper - item_lower) / 6, item_upper + (item_upper - item_lower) / 6]
+        item_id_c = "%s_c" % item['id']
+        # -----------------------------------------------
+        data = {
+            'x_name': item_id_x, 'x_title': '%sX-bar' % item_name,
+            'x_x_data': x_x_data, 'x_y_data': x_y_data,
+            'x_x_cl_data': x_x_cl_data, 'x_y_cl_data': x_y_cl_data,
+            'x_x_viol_data': x_x_viol_data, 'x_y_viol_data': x_y_viol_data,
+            'x_x_center_data': x_x_center_data, 'x_y_center_data': x_y_center_data,
+            'x_y_range': x_y_range,
+            'r_name': item_id_r, 'r_title': '%sR-bar' % item_name,
+            'r_x_data': x_x_data, 'r_y_data': r_y_data,
+            'r_x_cl_data': r_x_cl_data, 'r_y_cl_data': r_y_cl_data,
+            'r_x_viol_data': r_x_viol_data, 'r_y_viol_data': r_y_viol_data,
+            'r_x_center_data': r_x_center_data, 'r_y_center_data': r_y_center_data,
+            'r_y_range': r_y_range_data,
+            'c_name': item_id_c, 'c_title': '   %s管制圖' % item_name,
+            'c_x_data': count_x_data, 'c_y_data': count_y_data,
+            'c_x_viol_data': count_viol_x_data, 'c_y_viol_data': count_viol_y_data,
+            'c_x_center_data': count_x_center_data, 'c_y_center_data': count_y_center_data,
+            'c_x_cl_data': count_cl_x_data, 'c_y_cl_data': count_cl_y_data,
+            'c_x_range': count_range_x,
+            'data': '量測數值', 'cl': '規格上限/規格下限', 'center': '規格中心', 'vol': '超出'
+        }
+        all_data.append(data)
+        # print(r, x)
+        # print(x_ucl, x_lcl)
+        # print(x_x_center_data, x_y_center_data)
+        # print(x_y_range)
+        # print(r_y_data)  # 每組資料全距
+        # print(m_y_data)  # 每組資料平均值
+        # print(all_value_data)
+    return render(request, 'data_display/detail/data_display_all_detail.html', locals())
+
+
+def display_all_report(request, id):
+    print(id)
+    measure_item_data = models.measure_items.objects.filter(project_measure_id=id).values('measurement_items', 'id')
+    # print(measure_item_data)
+    for item in measure_item_data:
+        # print(item['measurement_items'])
+        # print(item['id'])
+        specification_center = models.measure_items.objects.get(id=item['id']).specification_center
+        upper_limit = models.measure_items.objects.get(id=item['id']).upper_limit
+        lower_limit = models.measure_items.objects.get(id=item['id']).lower_limit
+        t = float()
+        t = upper_limit - lower_limit
+        all_value = models.measure_values.objects.filter(measure_name_id=item['id']).values('measure_value')
+        measure_count = models.measure_items.objects.get(id=item['id']).measure_number
+        number = 0
+        data = []
+        measure_all_data = []
+        average_data = []
+        # print(measure_count)
+        for i in all_value:
+            number = number + 1
+            data.append(i['measure_value'])
+            # print(data)
+            if int(measure_count) == number:
+                number = 0
+                measure_all_data.append(data)
+                data = []
+        for i in measure_all_data:
+            average_data.append(statistics.mean(i))
+        x = statistics.mean(average_data)
+        ca = (x - specification_center) / (t / 2)
+        stdev = statistics.stdev(average_data) #標準差
+        cp = (upper_limit-lower_limit)/6*stdev
+        cpk = cp*(1-ca)
+        # ------------------------------------------
+        print(statistics.stdev(average_data))
+        print(average_data)
+        print(x, stdev)
+        print(ca, cp, cpk)
+        print(measure_all_data)
+    return render(request, 'data_display/report/data_display_report.html', locals())
+
+
+def display_data_timely(request, id):
+    # a = [{'id': '63', 'x': [1, 2, 3, 4, 5], 'y': [10, 4, 7, 8, 8]},
+    #      {'id': 'Linear Size.1', 'x': [1, 2, 3, 4, 5], 'y': [2, 4, 7, 8, 8]}]
+    # b = json.dumps(['tester', 'tester_1'])
+    # print(id)
+    chart_id = []
+    item = models.measure_items.objects.filter(project_measure_id=id).values('id')
+    for i in item:
+        image = models.measure_items.objects.get(id=i['id']).image
+        chart_id.append({'id': i['id'], 'image': image})
+    print(chart_id)
+    # ------------------------
+    all_data = []  # 放每一個專案量測項目的資料
+    measure_item = models.measure_items.objects.filter(project_measure_id=id).values('measurement_items')
+    for item in measure_item:
+        count_x_data = []
+        count_y_data = []
+        count_x_data = []
+        count_y_data = []
+        count_viol_x_data = []
+        count_viol_y_data = []
+        count_x_center_data = []
+        count_y_center_data = []
+        count_viol_x_data = []
+        count_viol_y_data = []
+        count_range_x = []
+        measure_item = item['measurement_items']  # 量測項目名稱
+        measure_item_id = models.measure_items.objects.get(measurement_items=measure_item).id  # 量測項目id
+        item_upper = float(models.measure_items.objects.get(measurement_items=measure_item).upper_limit)
+        item_lower = float(models.measure_items.objects.get(measurement_items=measure_item).lower_limit)
+        item_center = float(models.measure_items.objects.get(measurement_items=measure_item).specification_center)
+        print(measure_item, measure_item_id)
+        data = models.measure_values.objects.filter(measure_name_id=measure_item_id).values('measure_value',
+                                                                                            'measure_number')
+        for item_2 in data:
+            # print(item_2['measure_value'], item_2['measure_number'])
+            count_x_data.append(item_2['measure_number'])
+            count_y_data.append(item_2['measure_value'])
+            if item_2['measure_value'] > item_upper or item_2['measure_value'] < item_lower:
+                count_viol_x_data.append(item_2['measure_number'])
+                count_viol_y_data.append(item_2['measure_value'])
+        count_x_center_data = [count_x_data[0], count_x_data[-1]]  # 中心線1-1
+        count_y_center_data = [item_center, item_center]  # 中心線數值
+        count_cl_x_data = [count_x_data[0], count_x_data[-1], '', count_x_data[0], count_x_data[-1]]
+        count_cl_y_data = [item_upper, item_upper, '', item_lower, item_lower]
+        count_range_x = [item_lower - (item_upper - item_lower) / 6, item_upper + (item_upper - item_lower) / 6]
+        print(count_viol_y_data, count_viol_x_data)
+        print(count_x_data, count_y_data)
+        data = {'name': str(measure_item_id), 'count_range_x': count_range_x,
+                'count_x_data': count_x_data, 'count_y_data': count_y_data,
+                'count_viol_x_data': count_viol_x_data, 'count_viol_y_data': count_viol_y_data,
+                'count_cl_x_data': count_cl_x_data, 'count_cl_y_data': count_cl_y_data,
+                'count_x_center_data': count_x_center_data, 'count_y_center_data': count_y_center_data,
+                'data': '量測數值', 'cl': '規格上限/規格下限', 'center': '規格中心', 'vol': '超出',
+                'item_name': str(measure_item)}
+        all_data.append(data)
+    print(all_data)
+
+    # count_x_data.append()
+    return render(request, 'data_display/timely/data_display_timely.html', locals())

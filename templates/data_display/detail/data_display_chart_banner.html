@@ -1,0 +1,327 @@
+{#{%  %}#}
+{% load static %}
+<div>
+    <a class="image">
+        <img src='/static/{{ project_data.project_image_url }}' width="120%" align="center">
+    </a>
+</div>
+<div>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th scope="col">專案名稱</th>
+            <th scope="col">建立人</th>
+            <th scope="col">建立日期</th>
+            <th scope="col">備註</th>
+            <th scope="col">量測人員</th>
+            <th scope="col">量測數據上傳日期</th>
+            <th scope="col">量測件數</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{ project_name }}</td>
+            <td>{{ project_data.man }}</td>
+            <td>{{ project_data.create_date }}</td>
+            <td>{{ project_data.remake }}</td>
+            <td>{{ project_data.measure_man }}</td>
+            <td>{{ project_data.update_time }}</td>
+            <td>{{ project_data.number_of_pieces }}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div class="accordion">
+    <div class="card ">
+        {% for item in all_measure_data %}
+            <div class="card-header ">
+                <h5 class="mb-0 ">
+                    <button class="button primary" type="button" data-toggle="collapse"
+                            data-target="#{{ item.id }}" aria-expanded="false" aria-controls="{{ item.id }}"
+                            style="width: 50%; font-family:Arial ; font-size: 18px">
+                        <p class="">{{ item.measurement_items }}</p>
+                    </button>
+                </h5>
+            </div>
+            <div id="{{ item.id }}" class="collapse " data-parent="#accordionExample">
+                <div class="card-body">
+                    <a class="image">
+                        <img src='/static/{{ item.image }}' align="center">
+                    </a>
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col"> 量測項目名稱</th>
+                            <th scope="col">量具名稱</th>
+                            <th scope="col">規格中心</th>
+                            <th scope="col">規格上限</th>
+                            <th scope="col">規格下限</th>
+                            <th scope="col">量測次數</th>
+                            <th scope="col">量測點數</th>
+                            <th scope="col">量測單位</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr align="center" valign="center">
+                            <td class="vertical-align:revert">{{ item.measurement_items }}</td>
+                            <td style="vertical-align: revert">{{ item.too_name }} </td>
+                            <td style="vertical-align: revert">{{ item.specification_center }}</td>
+                            <td style="vertical-align: revert">{{ item.upper_limit }}</td>
+                            <td style="vertical-align: revert">{{ item.lower_limit }}</td>
+                            <td style="vertical-align: revert">{{ item.measure_number }}</td>
+                            <td style="vertical-align: revert">{{ item.measure_points }}</td>
+                            <td style="vertical-align: revert">{{ item.measure_unit }} </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div>
+                        <div id='{{ item.id }}_x' style="width:80em"></div>
+                    </div>
+                    <div>
+                        <div id='{{ item.id }}_r' style="width:80em"></div>
+                    </div>
+                    <div>
+                        <div id="{{ item.id }}_c" style="width:80em"></div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+<script language="JavaScript">
+    var data =
+    {{ all_data |safe }}
+    for (i in data) {
+        TESTER = document.getElementById(data[i]['x_name']);
+        var Data_x = {
+            type: 'scatter',
+            x: data[i]['x_x_data'],
+            y: data[i]['x_y_data'],
+            mode: 'lines+markers',
+            name: data[i]['data'],
+            showlegend: true,
+            hoverinfo: 'all',
+            line: {
+                color: 'blue',
+                width: 2
+            },
+            marker: {
+                color: 'blue',
+                size: 8,
+                symbol: 'circle'
+            }
+        }
+
+        var Viol_x = {
+            type: 'scatter',
+            x: data[i]['x_x_viol_data'],
+            y: data[i]['x_y_viol_data'],
+            mode: 'markers',
+            name: data[i]['data'],
+            showlegend: true,
+            marker: {
+                color: 'rgb(255,65,54)',
+                line: {width: 3},
+                opacity: 0.5,
+                size: 12,
+                symbol: 'circle-open'
+            }
+        }
+
+        var CL_x = {
+            type: 'scatter',
+            x: data[i]['x_x_cl_data'],
+            y: data[i]['x_y_cl_data'],
+            mode: 'lines',
+            name: data[i]['cl'],
+            showlegend: true,
+            line: {
+                color: 'red',
+                width: 2,
+                dash: 'dash'
+            }
+        }
+
+        var Centre_x = {
+            type: 'scatter',
+            x: data[i]['x_x_center_data'],
+            y: data[i]['x_y_center_data'],
+            mode: 'lines',
+            name: data[i]['center'],
+            showlegend: true,
+            line: {
+                color: 'grey',
+                width: 2
+            }
+        }
+
+        var data_x = [Data_x, Viol_x, CL_x, Centre_x]
+
+        var layout_x = {
+            title: data[i]['x_title'],
+            xaxis: {
+                zeroline: false
+            },
+            yaxis: {
+                range: data[i]['x_y_range'],
+                zeroline: false
+            }
+        }
+        Plotly.newPlot(data[i]['x_name'], data_x, layout_x);
+
+        TESTER = document.getElementById(data[i]['r_name']);
+        var Data_r = {
+            type: 'scatter',
+            x: data[i]['r_x_data'],
+            y: data[i]['r_y_data'],
+            mode: 'lines+markers',
+            name: data[i]['data'],
+            showlegend: true,
+            hoverinfo: 'all',
+            line: {
+                color: 'blue',
+                width: 2
+            },
+            marker: {
+                color: 'blue',
+                size: 8,
+                symbol: 'circle'
+            }
+        }
+
+        var Viol_r = {
+            type: 'scatter',
+            x: data[i]['r_x_viol_data'],
+            y: data[i]['r_y_viol_data'],
+            mode: 'markers',
+            name: data[i]['data'],
+            showlegend: true,
+            marker: {
+                color: 'rgb(255,65,54)',
+                line: {width: 3},
+                opacity: 0.5,
+                size: 12,
+                symbol: 'circle-open'
+            }
+        }
+
+        var CL_r = {
+            type: 'scatter',
+            x: data[i]['r_x_cl_data'],
+            y: data[i]['r_y_cl_data'],
+            mode: 'lines',
+            name: data[i]['cl'],
+            showlegend: true,
+            line: {
+                color: 'red',
+                width: 2,
+                dash: 'dash'
+            }
+        }
+
+        var Centre_r = {
+            type: 'scatter',
+            x: data[i]['r_x_center_data'],
+            y: data[i]['r_y_center_data'],
+            mode: 'lines',
+            name: data[i]['center'],
+            showlegend: true,
+            line: {
+                color: 'grey',
+                width: 2
+            }
+        }
+
+        var data_r = [Data_r, Viol_r, CL_r, Centre_r]
+
+        var layout_r = {
+            title: data[i]['r_title'],
+            xaxis: {
+                zeroline: false
+            },
+            yaxis: {
+                range: data[i]['r_y_range'],
+                zeroline: false
+            }
+        }
+        Plotly.newPlot(data[i]['r_name'], data_r, layout_r);
+
+        TESTER = document.getElementById(data[i]['c_name']);
+        var Data_c = {
+            type: 'scatter',
+            x: data[i]['c_x_data'],
+            y: data[i]['c_y_data'],
+            mode: 'lines+markers',
+            name: data[i]['data'],
+            showlegend: true,
+            hoverinfo: 'all',
+            line: {
+                color: 'blue',
+                width: 2
+            },
+            marker: {
+                color: 'blue',
+                size: 8,
+                symbol: 'circle'
+            }
+        }
+
+        var Viol_c = {
+            type: 'scatter',
+            x: data[i]['c_x_viol_data'],
+            y: data[i]['c_y_viol_data'],
+            mode: 'markers',
+            name: data[i]['vol'],
+            showlegend: true,
+            marker: {
+                color: 'rgb(255,65,54)',
+                line: {width: 3},
+                opacity: 0.5,
+                size: 12,
+                symbol: 'circle-open'
+            }
+        }
+
+        var CL_c = {
+            type: 'scatter',
+            x: data[i]['c_x_cl_data'],
+            y: data[i]['c_y_cl_data'],
+            mode: 'lines',
+            name: data[i]['cl'],
+            showlegend: true,
+            line: {
+                color: 'red',
+                width: 2,
+                dash: 'dash'
+            }
+        }
+
+        var Centre_c = {
+            type: 'scatter',
+            x: data[i]['c_x_center_data'],
+            y: data[i]['c_y_center_data'],
+            mode: 'lines',
+            name: data[i]['center'],
+            showlegend: true,
+            line: {
+                color: 'grey',
+                width: 2
+            }
+        }
+
+        var data_c = [Data_c, Viol_c, CL_c, Centre_c]
+
+        var layout_c = {
+            title: data[i]['c_title'],
+            xaxis: {
+                zeroline: false
+            },
+            yaxis: {
+                range: data[i]['c_x_range'],
+                zeroline: false
+            }
+        }
+        Plotly.newPlot(data[i]['c_name'], data_c, layout_c);
+    }
+
+</script>

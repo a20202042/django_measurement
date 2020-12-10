@@ -44,4 +44,10 @@ urlpatterns = [
                   path('delet/measure_item/<str:id>', views.delet_item, name='item_delet'),
                   path('update/v/<str:id>', views.update_item, name='update_item'),
                   path('item_image/<str:id>', views.measure_item_image_show, name='items_image_show'),
+                  path('measure_data_display/', views.data_display_project),
+                  path('measure_data_display/<str:id>', views.measure_data_display_show, name='measuredata_display'),
+                  path('measure_data_display/display_all/<str:id>', views.display_all_measure_data_chart),
+                  path('measure_data_display/timely/<str:id>', views.display_data_timely),
+                  path('measure_data_display/report/<str:id>', views.display_all_report),
+                  # path('measure_data_display/display_all/<str:id>', views.display_all_measure_data_chart),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

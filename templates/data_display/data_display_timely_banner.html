@@ -1,0 +1,36 @@
+<table class="table table-bordered" id="project_table">
+    <thead>
+    <tr>
+        <th scope="col"> 專案名稱</th>
+        <th scope="col">專案工單</th>
+        <th scope="col">量測件數</th>
+        <th scope="col">建立人</th>
+        <th scope="col">量測人</th>
+        <th scope="col">量測時間</th>
+        <th scope="col">上傳時間</th>
+        <th scope="col">量測數量</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for p in all_data %}
+        <tr>
+            <td style="vertical-align: revert">{{ p.project }}</td>
+            <td style="vertical-align: revert">{{ p.work_order }}</td>
+            <td style="vertical-align: revert">{{ p.number_of_parts }}</td>
+            <td style="vertical-align: revert">{{ p.founder_name }}</td>
+            <td style="vertical-align: revert">{{ p.measure_man }}</td>
+            <td style="vertical-align: revert">{{ p.project_create_time }}</td>
+            <td style="vertical-align: revert">{{ p.value_update_time }}</td>
+            <td style="vertical-align: revert">{{ p.number }}</td>
+            <td style="vertical-align: revert">
+                <button type="button">
+                    <a href="/measure_data_display/timely/{{ p.project_id }}">
+                    <span class="glyphicon glyphicon-align-justify glyphicon "></span> 檢視
+                    </a>
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
