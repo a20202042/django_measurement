@@ -480,7 +480,7 @@ def display_all_measure_data_chart(request, id):
     measure_item = models.measure_items.objects.filter(project_measure_id=id).values('id')
     project_name = models.project.objects.get(id=id).project_name
     man = models.project.objects.get(id=id).founder_name
-    print(man)
+    # print(man)
     create_date = models.project.objects.get(id=id).project_create_date
     remake = models.project.objects.get(id=id).remake
     project_imag_url = models.project.objects.get(id=id).project_image
@@ -490,7 +490,7 @@ def display_all_measure_data_chart(request, id):
     measure_count = len(models.measure_values.objects.filter(measure_project_id=id).values('measure_value')) \
                     / int(
         models.measure_items.objects.filter(project_measure_id=id).values('measure_number')[0]['measure_number'])
-    print(measure_count)
+    # print(measure_count)
     project_data = {'project_name ': project_name, 'man': man,
                     'create_date': create_date, 'remake': remake,
                     'project_image_url': project_imag_url, 'measure_man': measure_man,
@@ -509,6 +509,7 @@ def display_all_measure_data_chart(request, id):
         data = dict()
         item_id_x = '%s_x' % item['id']
         item_id_r = '%s_r' % item['id']
+        h_name = '%s_h' % item['id']
         measure_count = models.measure_items.objects.get(id=item['id']).measure_number
         item_name = models.measure_items.objects.get(id=item['id']).measurement_items
         # print(item_name)
@@ -600,6 +601,49 @@ def display_all_measure_data_chart(request, id):
         count_range_x = [item_lower - (item_upper - item_lower) / 6, item_upper + (item_upper - item_lower) / 6]
         item_id_c = "%s_c" % item['id']
         # -----------------------------------------------
+        measure_value_data = []
+        print(measure_value_dcit)
+        for i in measure_value_dcit:
+            measure_value_data.append(i['measure_value'])
+        print(measure_value_data)
+        print(numpy.max(measure_value_data), numpy.min(measure_value_data))
+        # print((numpy.max(measure_value_data) - numpy.min(measure_value_data))/11)
+        # h_maxmin_data = [numpy.max(measure_value_data), numpy.min(measure_value_data)]
+        h_max_min = numpy.linspace(numpy.min(measure_value_data), numpy.max(measure_value_data), num=12)
+        h_range = []
+        h_range_old_data = []
+        h_all_data = []
+        h_t_x_data = []
+        h_t_y_data = []
+        h_y_range = []
+        for i in h_max_min:
+            h_range_old_data.append(round(i, 3))
+        for i in range(0, 11, 1):
+            h_range.append([h_range_old_data[i], h_range_old_data[i + 1]])
+        print(h_range)
+        data = []
+        for i_2 in h_range:
+            for i in measure_value_data:
+                if i <= i_2[1] and i > i_2[0]:
+                    data.append(i)
+                elif i == i_2[0]:
+                    data.insert(0, i)
+            data = sorted(data)
+            h_all_data.append(data)
+            data = []
+        # print(h_range[0][0], numpy.min(measure_value_data), h_all_data)
+        # if numpy.min(measure_value_data) == h_range[0][0]:
+        #     h_all_data[0][0].append(0)
+        # measure_value_data.remove(data)
+        print(h_all_data)
+        for i in h_range:
+            h_t_x_data.append(str(round(numpy.mean(i), 2)))
+        for i in h_all_data:
+            h_t_y_data.append(len(i))
+        h_y_range = [0, (numpy.max(h_t_y_data) + numpy.max(h_t_y_data) / 2)]
+        print(h_t_y_data, h_t_x_data, h_y_range)
+
+        # -----------------------------------------------
         data = {
             'x_name': item_id_x, 'x_title': '%sX-bar' % item_name,
             'x_x_data': x_x_data, 'x_y_data': x_y_data,
@@ -619,7 +663,9 @@ def display_all_measure_data_chart(request, id):
             'c_x_center_data': count_x_center_data, 'c_y_center_data': count_y_center_data,
             'c_x_cl_data': count_cl_x_data, 'c_y_cl_data': count_cl_y_data,
             'c_x_range': count_range_x,
-            'data': '量測數值', 'cl': '規格上限/規格下限', 'center': '規格中心', 'vol': '超出'
+            'data': '量測數值', 'cl': '規格上限/規格下限', 'center': '規格中心', 'vol': '超出',
+            'h_name': h_name,
+            'h_t_x_data': h_t_x_data, 'h_t_y_data': h_t_y_data, 'h_y_range': h_y_range,
         }
         all_data.append(data)
         # print(r, x)
@@ -633,11 +679,40 @@ def display_all_measure_data_chart(request, id):
 
 
 def display_all_report(request, id):
+    # ------------------------------------
+    measure_item = models.measure_items.objects.filter(project_measure_id=id).values('id')
+    project_name = models.project.objects.get(id=id).project_name
+    man = models.project.objects.get(id=id).founder_name
+    # print(man)
+    create_date = models.project.objects.get(id=id).project_create_date
+    remake = models.project.objects.get(id=id).remake
+    project_imag_url = models.project.objects.get(id=id).project_image
+    measure_value_man_id = models.measure_values.objects.filter(measure_project_id=id).values('measure_man', 'time_now')
+    measure_man = measure_value_man_id[0]['measure_man']
+    update_time = measure_value_man_id[0]['time_now']
+    measure_count = len(models.measure_values.objects.filter(measure_project_id=id).values('measure_value')) \
+                    / int(
+        models.measure_items.objects.filter(project_measure_id=id).values('measure_number')[0]['measure_number'])
+    # print(measure_count)
+    project_data = {'project_name ': project_name, 'man': man,
+                    'create_date': create_date, 'remake': remake,
+                    'project_image_url': project_imag_url, 'measure_man': measure_man,
+                    'update_time': update_time, 'number_of_pieces': str(measure_count)}
+    # -----------------------------------------
     print(id)
     measure_item_data = models.measure_items.objects.filter(project_measure_id=id).values('measurement_items', 'id')
+    all_data = []
+    yid_data = []
+    color = {
+        'D': "color: whitesmoke; background-color:pink",
+        'C': "color: whitesmoke; background-color:orange",
+        'B': "color: whitesmoke; background-color:dodgerblue",
+        'A': "color: whitesmoke; background-color:mediumseagreen",
+        'A+': "color: white; background-color: seagreen;"
+    }
     # print(measure_item_data)
     for item in measure_item_data:
-        # print(item['measurement_items'])
+        print(item['measurement_items'])
         # print(item['id'])
         specification_center = models.measure_items.objects.get(id=item['id']).specification_center
         upper_limit = models.measure_items.objects.get(id=item['id']).upper_limit
@@ -662,16 +737,105 @@ def display_all_report(request, id):
         for i in measure_all_data:
             average_data.append(statistics.mean(i))
         x = statistics.mean(average_data)
-        ca = (x - specification_center) / (t / 2)
-        stdev = statistics.stdev(average_data) #標準差
-        cp = (upper_limit-lower_limit)/6*stdev
-        cpk = cp*(1-ca)
-        # ------------------------------------------
-        print(statistics.stdev(average_data))
+        ca = abs((x - specification_center) / (t / 2))
+        stdev = statistics.stdev(average_data)  # 標準差
+        print(upper_limit, lower_limit)
         print(average_data)
-        print(x, stdev)
-        print(ca, cp, cpk)
-        print(measure_all_data)
+        cp = (upper_limit - lower_limit) / (6 * stdev)
+        cpk = cp * (1 - ca)
+        # --------------------------------------------顏色判別
+        ca_color = str()
+        cpk_color = str()
+        cp_color = str()
+        if abs(ca) <= float(0.125):
+            ca_color = color['A']
+        elif abs(ca) > float(0.125) and abs(ca) <= float(0.25):
+            ca_color = color['B']
+        elif abs(ca) > float(0.25) and abs(ca) <= float(0.5):
+            ca_color = color['C']
+        elif abs(ca) > float(0.5):
+            ca_color = color['D']
+
+        if abs(cp) >= 1.67:
+            cp_color = color['A+']
+        elif abs(cp) >= 1.33 and abs(cp) < 1.67:
+            cp_color = color['A']
+        elif abs(cp) >= 1.0 and abs(cp) < 1.33:
+            cp_color = color['B']
+        elif abs(cp) >= 0.67 and abs(cp) < 1.0:
+            cp_color = color['C']
+        elif abs(cp) < 0.67:
+            cp_color = color['D']
+
+        if abs(cpk) >= 1.67:
+            cpk_color = color['A+']
+        elif abs(cpk) >= 1.33 and abs(cpk) < 1.67:
+            cpk_color = color['A']
+        elif abs(cpk) >= 1.0 and abs(cpk) < 1.33:
+            cpk_color = color['B']
+        elif abs(cpk) >= 0.67 and abs(cpk) < 1.0:
+            cpk_color = color['C']
+        elif abs(cpk) < 0.67:
+            cpk_color = color['D']
+
+        # ------------------------------------------
+        yield_data = []
+        for i in measure_all_data:
+            yield_check = True
+            for value in i:
+                if value > upper_limit or value < lower_limit:
+                    print(value)
+                    yield_check = False
+                else:
+                    pass
+            if yield_check is False:
+                yield_data.append(False)
+            else:
+                yield_data.append(True)
+        yid_data.append(yield_data)
+
+        # ------------------------------------------
+        # print(statistics.stdev(average_data))
+        # print(x, stdev)
+        # print(ca, cp, cpk)
+        # print(measure_all_data)
+        # print(cpk_color, cp_color, ca_color)
+        data = {'item_name': item['measurement_items'], 'cp': round(cp, 3), 'ca': round(ca, 3),
+                'cpk': round(cpk, 3), 'upper_limit': upper_limit, 'lower_limit': lower_limit,
+                'stdev': round(stdev, 3), 'center': specification_center,
+                'ca_color': ca_color,
+                'cp_color': cp_color,
+                'cpk_color': cpk_color}
+        all_data.append(data)
+    yid_check = True
+    yid_check_data = []
+    yid_number = 0
+    for i in yid_data[0]:
+        yid_check_data.append(True)
+    for i in yid_data:
+        yid_number = 0
+        for i_2 in i:
+            yid_number = yid_number + 1
+            if i_2 is False:
+                a = i.index(i_2)
+                yid_check_data[yid_number - 1] = False
+            elif i_2 is True:
+                pass
+    total = len(yid_check_data)
+    good_number = int()
+    broken_number = int()
+    for i in yid_check_data:
+        if i is True:
+            good_number = good_number + 1
+        elif i is False:
+            broken_number = broken_number + 1
+    print(good_number, broken_number)
+    y = round(good_number / total, 2) * 100
+    defective = round(broken_number / total, 2) * 100
+    print(y, defective)
+    print(yid_check_data, defective)
+    yid_list = json.dumps([y, defective])
+    # ------------------------------------------
     return render(request, 'data_display/report/data_display_report.html', locals())
 
 
@@ -684,8 +848,13 @@ def display_data_timely(request, id):
     item = models.measure_items.objects.filter(project_measure_id=id).values('id')
     for i in item:
         image = models.measure_items.objects.get(id=i['id']).image
-        chart_id.append({'id': i['id'], 'image': image})
-    print(chart_id)
+        item_name = models.measure_items.objects.get(id=i['id']).measurement_items
+        chart_id.append({'id': i['id'], 'image': image, 'item_name': item_name})
+    print(item[0]['id'])
+    image_url = models.project.objects.get(id=id).project_image
+    # print(image_url)
+    project_data = {'project_image_url': image_url}
+    # print(chart_id)
     # ------------------------
     all_data = []  # 放每一個專案量測項目的資料
     measure_item = models.measure_items.objects.filter(project_measure_id=id).values('measurement_items')
@@ -706,7 +875,7 @@ def display_data_timely(request, id):
         item_upper = float(models.measure_items.objects.get(measurement_items=measure_item).upper_limit)
         item_lower = float(models.measure_items.objects.get(measurement_items=measure_item).lower_limit)
         item_center = float(models.measure_items.objects.get(measurement_items=measure_item).specification_center)
-        print(measure_item, measure_item_id)
+        # print(measure_item, measure_item_id)
         data = models.measure_values.objects.filter(measure_name_id=measure_item_id).values('measure_value',
                                                                                             'measure_number')
         for item_2 in data:
@@ -721,8 +890,10 @@ def display_data_timely(request, id):
         count_cl_x_data = [count_x_data[0], count_x_data[-1], '', count_x_data[0], count_x_data[-1]]
         count_cl_y_data = [item_upper, item_upper, '', item_lower, item_lower]
         count_range_x = [item_lower - (item_upper - item_lower) / 6, item_upper + (item_upper - item_lower) / 6]
-        print(count_viol_y_data, count_viol_x_data)
-        print(count_x_data, count_y_data)
+        # print(count_viol_y_data, count_viol_x_data)
+        # print(count_x_data, count_y_data)
+        # ------------------------------------------
+        # ------------------------------------------
         data = {'name': str(measure_item_id), 'count_range_x': count_range_x,
                 'count_x_data': count_x_data, 'count_y_data': count_y_data,
                 'count_viol_x_data': count_viol_x_data, 'count_viol_y_data': count_viol_y_data,
@@ -731,7 +902,7 @@ def display_data_timely(request, id):
                 'data': '量測數值', 'cl': '規格上限/規格下限', 'center': '規格中心', 'vol': '超出',
                 'item_name': str(measure_item)}
         all_data.append(data)
-    print(all_data)
+    # print(all_data)
 
     # count_x_data.append()
     return render(request, 'data_display/timely/data_display_timely.html', locals())

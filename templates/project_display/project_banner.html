@@ -1,28 +1,42 @@
-{% for p in projects %}
-    <tr >
-        <td style="vertical-align: revert">{{ p.project_name }} </td>
-        <td style="vertical-align: revert">{{ p.project_create_date }} </td>
-        <td style="vertical-align: revert">{{ p.founder_name }} </td>
-        <td style="vertical-align: revert">{{ p.remake }}</td>
-        <td style="vertical-align: revert">
-            <a href='#modal' id="item_image"  >
-            <img id="js-image" src="/static/{{ p.project_image }}" width='100' height="100" align="center" alt="Snow">
-            </a>
-        </td>
-        <td style="vertical-align: revert">
-            <button type="button"
-                    class="btn  js-delet-project"
-                    data-url="{% url 'project_delet' p.id %}">
-                <span class="glyphicon glyphicon-trash"></span>刪除
-            </button>
-            <button type="button"
-                    class="btn js-update-project"
-                    data-url="{% url 'update_project' p.id %}">
-                <span class="glyphicon glyphicon-pencil"></span>
-                修改
-            </button>
-        </td>
+<table class="table table-bordered" id="project_table">
+    <thead>
+    <tr>
+        <th scope="col"> 專案名稱</th>
+        <th scope="col">建立時間</th>
+        <th scope="col">建立人</th>
+        <th scope="col">備註</th>
+        <th scope="col">專案圖示</th>
+        <td></td>
     </tr>
-{% endfor %}
+    </thead>
+    <tbody>
+    {% for p in projects %}
+        <tr>
+            <td style="vertical-align: revert">{{ p.project_name }} </td>
+            <td style="vertical-align: revert">{{ p.project_create_date }} </td>
+            <td style="vertical-align: revert">{{ p.founder_name }} </td>
+            <td style="vertical-align: revert">{{ p.remake }}</td>
+            <td style="vertical-align: revert">
+                <a href='#modal' id="item_image">
+                    <img id="js-image" src="/static/{{ p.project_image }}" width='200' height="200" alt="Snow">
+                </a>
+            </td>
+            <td style="vertical-align: revert">
+                <button type="button"
+                        class="btn  js-delet-project primary"
+                        data-url="{% url 'project_delet' p.id %}">
+                    <span class="glyphicon glyphicon-trash"></span>刪除
+                </button>
+                <button type="button"
+                        class="btn js-update-project primary"
+                        data-url="{% url 'update_project' p.id %}">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                    修改
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 

@@ -1,56 +1,69 @@
 {% load static %}
+<div>
+    <div class="row">
+        <div class="col-sm">
+            <a class="image" style="height: 600px; width: 800px" onclick="show_project_image()">
+                <img style="height: 600px; width: 800px" src='/static/{{ project_data.project_image_url }}'
+                     align="center">
+            </a>
+        </div>
+        <div class="col-sm">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col" style="vertical-align: revert">量測項目名稱</th>
+                    <th scope="col" style="vertical-align: revert">量測項目圖示</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in chart_id %}
+                    <tr>
+                        <td style="vertical-align: revert">{{ i.item_name }}</td>
+                        <td style="vertical-align: revert">
+                            <a class="image" style="height: 60px; width: 60px"
+                               onclick="show_item_image({{ i.id }})">
+                                <img style="height: 60px; width: 60px" src="/static/{{ i.image }}">
+                            </a>
+                        </td>
+                    </tr>
+                    <div class="modal" id="{{ i.id }}_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    <img src='/static/{{ i.image }}' width="860px">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal" id="project_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src='/static/{{ project_data.project_image_url }}' width="860px">
+            </div>
+        </div>
+    </div>
+</div>
 {% for i in chart_id %}
     {#    <div class="text-center">#}
     <div>
-        <img src="/static/{{ i.image }}" class="img-thumbnail" style="width:40em;height:30em;" alt="Responsive image">
+        {#        <img src="/static/{{ i.image }}" class="img-thumbnail" style="width:40em;height:30em;" alt="Responsive image">#}
         <div id='{{ i.id }}' style="width:1200px;height:500px;"></div>
     </div>
-    <div>
-        <div id='test' style="width:1200px;height:500px;"></div>
-    </div>
+    {#    <div>#}
+    {#        <div id='test' style="width:1200px;height:500px;"></div>#}
+    {#    </div>#}
     {#    </div>#}
 {% endfor %}
 <script language="JavaScript">
-    function getData() {
-        dataSet = []
-        var rand = d3.random.normal(100, 30)
-        for (var i = 0; i < 7; i++) {
-            var value = Math.round(rand())
-            dataSet.push(value)
-            alert('2')
-        }
-    }
-
-    var trace1 = {
-        x: [0, 1, 2, 3, 4, 5],
-        y: [1.5, 1, 1.3, 0.7, 0.8, 0.9],
-        type: 'scatter'
-    };
-
-    var trace2 = {
-        x: [0, 1, 2, 3, 4, 5],
-        y: [1, 0.5, 0.7, 5.0, 0.3, 0.4],
-        width: [1, 1, 1, 1, 1],
-        type: 'bar'
-    };
-    var layout = {
-        title: 'Number of Graphs Made this Week',
-        font: {
-            family: 'Raleway, sans-serif'
-        },
-        showlegend: false,
-        yaxis: {
-            zeroline: false,
-            gridwidth: 1,
-            range: [0, 10],
-        },
-        bargap: 0
-    };
-
-
-    var data = [trace1, trace2];
-    Plotly.newPlot('test', data, layout);
-
     var item = {{ all_data|safe }};
     for (i in item) {
         TESTER = document.getElementById(item[i]['name']);
@@ -131,6 +144,14 @@
         console.log(Plotly.BUILD);
     }
 
+    function show_item_image(item) {
+        name = '#' + item + '_modal'
+        $(name).modal('show');
+    }
+
+    function show_project_image() {
+        $('#project_modal').modal('show');
+    }
 
     {#var list = {{ a|safe }};#}
     {#for (i in list) {#}

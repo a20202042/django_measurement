@@ -12,29 +12,27 @@
         <td style="vertical-align: revert">{{ m.measure_number }}</td>
         <td style="vertical-align: revert">{{ m.decimal_piaces }}</td>
         <td style="vertical-align: revert">
-            <a href='#modal' id="item_image" onclick="show()" >
-            <img id="js-image" src="/static/{{ m.image }}" width='100' height="100" align="center" alt="Snow">
+            <a href='#modal' id="item_image" onclick="show_item_image()">
+                <img id="js-image" src="/static/{{ m.image }}" width='100' height="100" align="center" alt="Snow">
             </a>
         </td>
         <td style="vertical-align: revert">
             <button type="button"
-                    class="btn  js-delet-item"
+                    class="btn  js-delet-item primary"
                     data-url="{% url 'item_delet' m.id %}">
                 <span class="glyphicon glyphicon-trash"></span>刪除
             </button>
             <button type="button"
-                    class="btn js-update-item"
+                    class="btn js-update-item primary"
                     data-url="{% url 'update_item' m.id %}">
-                <span class="glyphicon glyphicon-pencil"></span>
-                修改
+                <span class="glyphicon glyphicon-pencil"></span>修改
             </button>
         </td>
     </tr>
 {% endfor %}
 
-<script language="JavaScript">
-    var img = document.getElementById('js-image')
-    img.onclick = function (){
-    alert('1111')
-}
-</script>
+{#<script language="JavaScript">#}
+{#    var img = document.getElementById('js-image')#}
+{#    img.onclick = function (){#}
+{#    alert('1111')#}
+{#</script>#}
