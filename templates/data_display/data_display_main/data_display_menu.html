@@ -16,7 +16,7 @@
             </h1>
 
             <h3>
-                {% if request.path == "/measure_data_display" %}
+                {% if request.path != "/measure_data_display/timely/115" %}
                     <a href="/measure_data_display/timely/{{ id }}" class="button primary">即時顯示</a>
                 {% else %}
                     <a href="/measure_data_display/timely/{{ id }}" class="button">即時顯示</a>

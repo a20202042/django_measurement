@@ -1,6 +1,6 @@
 <table class="table table-bordered" id="project_table">
     <thead>
-    <tr>
+    <tr align="center" valign="center">
         <th scope="col"> 專案名稱</th>
         <th scope="col">建立時間</th>
         <th scope="col">建立人</th>
@@ -11,32 +11,49 @@
     </thead>
     <tbody>
     {% for p in projects %}
-        <tr>
+        <tr align="center" valign="center">
             <td style="vertical-align: revert">{{ p.project_name }} </td>
             <td style="vertical-align: revert">{{ p.project_create_date }} </td>
             <td style="vertical-align: revert">{{ p.founder_name }} </td>
             <td style="vertical-align: revert">{{ p.remake }}</td>
             <td style="vertical-align: revert">
-                <a href='#modal' id="item_image">
-                    <img id="js-image" src="/static/{{ p.project_image }}" width='200' height="200" alt="Snow">
+                <a href='#modal' id="item_image" onclick="show_project({{ p.id }})">
+                    <img id="js-image" src="{{ MEDIA_URL }}{{ p.project_image }}" width='100' height="100" alt="Snow">
                 </a>
             </td>
             <td style="vertical-align: revert">
-                <button type="button"
-                        class="btn  js-delet-project primary"
+                <button type="button" style="box-shadow:inset 0 0 0 2px #d9534f; color: #d9534f;"
+                        class="btn  js-delet-project btn-danger text-white"
                         data-url="{% url 'project_delet' p.id %}">
-                    <span class="glyphicon glyphicon-trash"></span>刪除
+                    <span style="color: white" class="glyphicon glyphicon-trash">刪除</span>
                 </button>
                 <button type="button"
-                        class="btn js-update-project primary"
+                        class="btn js-update-project btn-warning " style="box-shadow:inset 0 0 0 2px #f0ad4e;"
                         data-url="{% url 'update_project' p.id %}">
-                    <span class="glyphicon glyphicon-pencil"></span>
-                    修改
+                    <span style="color: white" class="glyphicon glyphicon-pencil">修改</span>
+
                 </button>
             </td>
         </tr>
+        <div class="modal" id="{{ p.id }}_item_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <img src="{{ MEDIA_URL }}{{ p.project_image }}" width="860px">
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endfor %}
     </tbody>
 </table>
+<script language="JavaScript">
+    function show_project(id) {
+        name = '#' + id + '_item_modal';
+        $(name).modal('show');
+    }
+</script>
+
 
 

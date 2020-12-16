@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 # Create your views here.
 
-def index(request):
+def main(request):
     return render(request, 'index.html', locals())
 
 
@@ -133,6 +133,8 @@ def delet_project(request, id):
     project = models.project.objects.get(id=id)
     data = dict()
     if request.method == 'POST':
+        print(project.project_image)
+        # models.file_delet(project.project_image)
         project.delete()
         data['form_is_valid'] = True
         projects = models.project.objects.all()
@@ -144,7 +146,8 @@ def delet_project(request, id):
                    'project_name': project.project_name,
                    'founder_name': project.founder_name,
                    'time': project.project_create_date,
-                   'remake': project.remake}
+                   'remake': project.remake,
+                   'project_image': project.project_image}
         data['html_form'] = render_to_string(
             'project_display/delet/delet_project.html',
             context, request=request)
@@ -467,6 +470,7 @@ def data_display_project(request):
             data = {}
         else:
             pass
+
     return render(request, 'data_display/data_display_timely.html', locals())
 
 
@@ -496,16 +500,13 @@ def display_all_measure_data_chart(request, id):
                     'project_image_url': project_imag_url, 'measure_man': measure_man,
                     'update_time': update_time, 'number_of_pieces': str(measure_count)}
 
-    all_measure_data = []
-    for item in measure_item:
-        item_name = models.measure_items.objects.get(id=item['id'])
-        all_measure_data.append(item_name)
     # ----------------------------
     all_data = []
-    a2_data = {'3': 1.023, '5': 0.577, '7': 0.419}
-    d4_data = {'3': 2.575, '5': 2.115, '7': 1.924}
-    d3_data = {'3': 0, '5': 0, '7': 0.076}
+    a2_data = {'1': 1, '3': 1.023, '5': 0.577, '7': 0.419}
+    d4_data = {'1': 1, '3': 2.575, '5': 2.115, '7': 1.924}
+    d3_data = {'1': 1, '3': 0, '5': 0, '7': 0.076}
     for item in measure_item:
+        item_id = item['id']
         data = dict()
         item_id_x = '%s_x' % item['id']
         item_id_r = '%s_r' % item['id']
@@ -533,15 +534,18 @@ def display_all_measure_data_chart(request, id):
                 value_data = []
         measure_number = int(len(measure_value_dcit) / int(measure_count))  # 多少量測次數
         for i in range(1, measure_number + 1):
-            x_x_data.append(i)
+            x_x_data.append(round(i, 3))
         for i in all_value_data:
-            x_y_data.append(statistics.mean(i))  # 平均值
+            x_y_data.append(round(statistics.mean(i), 3))  # 平均值
             r_y_data.append(numpy.max(i) - numpy.min(i))
         r = statistics.mean(r_y_data)
         x = statistics.mean(x_y_data)
+        print(measure_count)
         a2 = a2_data[str(measure_count)]
-        x_ucl = x + a2 * r  # x上限計算
-        x_lcl = x - a2 * r  # x下限計算
+        x_ucl = round(x + a2 * r, 3)  # x上限計算
+        x_lcl = round(x - a2 * r, 3)  # x下限計算
+        r = round(statistics.mean(r_y_data), 3)
+        x = round(statistics.mean(x_y_data), 3)
         for i in x_y_data:
             if i < x_lcl or i > x_ucl:
                 x_y_viol_data.append(i)
@@ -554,8 +558,8 @@ def display_all_measure_data_chart(request, id):
         # --------------------------------------------
         d4 = d4_data[str(measure_count)]
         d3 = d3_data[str(measure_count)]
-        r_ucl = d4 * r
-        r_lcl = d3 * r
+        r_ucl = round(d4 * r, 3)
+        r_lcl = round(d3 * r, 3)
         r_x_cl_data = [x_x_data[0], x_x_data[-1], '', x_x_data[0], x_x_data[-1]]
         r_y_cl_data = [r_ucl, r_ucl, '', r_lcl, r_lcl]
         r_x_viol_data = []
@@ -602,11 +606,11 @@ def display_all_measure_data_chart(request, id):
         item_id_c = "%s_c" % item['id']
         # -----------------------------------------------
         measure_value_data = []
-        print(measure_value_dcit)
+        # print(measure_value_dcit)
         for i in measure_value_dcit:
             measure_value_data.append(i['measure_value'])
-        print(measure_value_data)
-        print(numpy.max(measure_value_data), numpy.min(measure_value_data))
+        # print(measure_value_data)
+        # print(numpy.max(measure_value_data), numpy.min(measure_value_data))
         # print((numpy.max(measure_value_data) - numpy.min(measure_value_data))/11)
         # h_maxmin_data = [numpy.max(measure_value_data), numpy.min(measure_value_data)]
         h_max_min = numpy.linspace(numpy.min(measure_value_data), numpy.max(measure_value_data), num=12)
@@ -617,10 +621,10 @@ def display_all_measure_data_chart(request, id):
         h_t_y_data = []
         h_y_range = []
         for i in h_max_min:
-            h_range_old_data.append(round(i, 3))
+            h_range_old_data.append(round(i, 4))
         for i in range(0, 11, 1):
             h_range.append([h_range_old_data[i], h_range_old_data[i + 1]])
-        print(h_range)
+        # print(h_range)
         data = []
         for i_2 in h_range:
             for i in measure_value_data:
@@ -635,13 +639,16 @@ def display_all_measure_data_chart(request, id):
         # if numpy.min(measure_value_data) == h_range[0][0]:
         #     h_all_data[0][0].append(0)
         # measure_value_data.remove(data)
-        print(h_all_data)
+        # print(h_all_data)
         for i in h_range:
-            h_t_x_data.append(str(round(numpy.mean(i), 2)))
+            h_t_x_data.append(str(round(numpy.mean(i), 4)))
         for i in h_all_data:
             h_t_y_data.append(len(i))
         h_y_range = [0, (numpy.max(h_t_y_data) + numpy.max(h_t_y_data) / 2)]
-        print(h_t_y_data, h_t_x_data, h_y_range)
+        h_chart_name = '%s_直方圖' % item_name
+        # print(h_t_y_data, h_t_x_data, h_y_range)
+
+        # -----------------------------------------------
 
         # -----------------------------------------------
         data = {
@@ -664,17 +671,101 @@ def display_all_measure_data_chart(request, id):
             'c_x_cl_data': count_cl_x_data, 'c_y_cl_data': count_cl_y_data,
             'c_x_range': count_range_x,
             'data': '量測數值', 'cl': '規格上限/規格下限', 'center': '規格中心', 'vol': '超出',
-            'h_name': h_name,
-            'h_t_x_data': h_t_x_data, 'h_t_y_data': h_t_y_data, 'h_y_range': h_y_range,
+            'h_t_x_data': h_t_x_data, 'h_t_y_data': h_t_y_data,
+            'h_chart_name': h_chart_name, 'h_y_range': h_y_range,'h_name':h_name
         }
         all_data.append(data)
-        # print(r, x)
-        # print(x_ucl, x_lcl)
-        # print(x_x_center_data, x_y_center_data)
-        # print(x_y_range)
-        # print(r_y_data)  # 每組資料全距
-        # print(m_y_data)  # 每組資料平均值
-        # print(all_value_data)
+    item_data = []
+    for item in measure_item:
+        item_id = item['id']
+        item_name = models.measure_items.objects.get(id=item['id']).measurement_items
+        measure_tool = models.measure_items.objects.get(id=item['id']).too_name
+        center = models.measure_items.objects.get(id=item['id']).specification_center
+        upper_limit = models.measure_items.objects.get(id=item['id']).upper_limit
+        lower_limit = models.measure_items.objects.get(id=item['id']).lower_limit
+        number = models.measure_items.objects.get(id=item['id']).measure_number
+        point = models.measure_items.objects.get(id=item['id']).measure_points
+        unit = models.measure_items.objects.get(id=item['id']).measure_unit
+        image_url = models.measure_items.objects.get(id=item['id']).image
+        #     # -----------------數據計算
+        #     measure_count = models.measure_items.objects.get(id=item['id']).measure_number
+        #     measure_value_dcit = models.measure_values.objects.filter(measure_name_id=item['id']). \
+        #         values('measure_value', 'measure_number')
+        #     value_data = []
+        #     all_value_data_sort = []
+        #     all_value_data_avg = []
+        #     number = int()
+        #     for i in measure_value_dcit:
+        #         # print(i['measure_value'])
+        #         value_data.append(i["measure_value"])
+        #         number = number + 1
+        #         if number == int(measure_count):
+        #             number = 0
+        #             all_value_data_sort.append(value_data)
+        #             value_data = []
+        #     # measure_number = int(len(measure_value_dcit) / int(measure_count))  # 多少量測次數
+        #     r_data = []
+        #     value_data = []
+        #     for i in all_value_data:
+        #         for i_2 in i:
+        #             value_data.append(i_2)
+        #         all_value_data_avg.append(statistics.mean(i))
+        #         r_data.append(numpy.max(i) - numpy.min(i))
+        #     x = statistics.mean(all_value_data_avg)
+        #     r = statistics.mean(r_data)
+        #     a2 = a2_data[str(measure_count)]
+        #     x_ucl = round(x + a2 * r, 2)  # x上限計算
+        #     x_lcl = round(x - a2 * r, 2)  # x下限計算
+        #     x_average = round(statistics.mean(all_value_data_avg), 2)
+        #     x_max = round(numpy.max(all_value_data_avg), 2)
+        #     x_min = round(numpy.min(all_value_data_avg), 2)
+        #     # ------------------R計算
+        #     d4 = d4_data[str(measure_count)]
+        #     d3 = d3_data[str(measure_count)]
+        #     r_ucl = round(d4 * r, 2)
+        #     r_lcl = round(d3 * r, 2)
+        #     r_max = round(numpy.max(r_data), 2)
+        #     r_min = round(numpy.min(r_data), 2)
+        #     r_max_min = round(numpy.max(r_data) - numpy.min(r_data), 2)
+        #     r_avr = round(statistics.mean(r_data), 3)
+        #     # ------------------管制圖計算
+        #     avg = statistics.mean(value_data)
+        #     max_ = round(numpy.max(value_data), 2)
+        #     min_ = round(numpy.min(value_data), 2)
+        #     max_min = round(numpy.max(value_data) - numpy.min(value_data), 2)
+        #     # ------------------質方圖計算
+        #     h_max_min = numpy.linspace(numpy.min(value_data), numpy.max(value_data), num=12)
+        #     print(h_max_min)
+        #     h_range_old_data = []
+        #     h_range = []
+        #     h_group_pitch = round(r / 11, 2)
+        #     for i in h_max_min:
+        #         h_range.append(round(i, 2))
+        #     print(h_range)
+        #     # ----------------字典上傳
+        data = {'item_id': item_id, 'measurement_items': item_name,
+                'tool_name': measure_tool,
+                'specification_center': center,
+                'upper_limit': upper_limit, 'lower_limit': lower_limit,
+                'measure_number': number, 'measure_points': point,
+                'measure_unit': unit, 'image': image_url}
+        item_data.append(data)
+    #             'x_average': x_average, 'x_ucl': x_ucl, 'x_lcl': x_lcl, 'x_max': x_max,
+    #             'x_min': x_min, 'r_avg': r_avr, 'r_ucl': r_ucl, 'r_lul': r_lcl, 'r_max': r_max,
+    #             'r_min': r_min, 'r_max_min': r_max_min, 'max': max_, 'min': min_, 'max_min': max_min,
+    #             'number': 11, 'h_list': h_range, 'r': round(r, 2), 'h_group_pitch': h_group_pitch}
+
+    # i_2 = {'1':'/', '2': '//'}
+    # item_name.update(i_2)
+    # print(item_name)
+    # print(r, x)
+    # print(x_ucl, x_lcl)
+    # print(x_x_center_data, x_y_center_data)
+    # print(x_y_range)
+    # print(r_y_data)  # 每組資料全距
+    # print(m_y_data)  # 每組資料平均值
+    # print(all_value_data)
+    print(all_data)
     return render(request, 'data_display/detail/data_display_all_detail.html', locals())
 
 
@@ -835,6 +926,7 @@ def display_all_report(request, id):
     print(y, defective)
     print(yid_check_data, defective)
     yid_list = json.dumps([y, defective])
+    pie_chart_name = json.dumps(str('%s 良率 / 不良率' % project_name))
     # ------------------------------------------
     return render(request, 'data_display/report/data_display_report.html', locals())
 
@@ -851,9 +943,9 @@ def display_data_timely(request, id):
         item_name = models.measure_items.objects.get(id=i['id']).measurement_items
         chart_id.append({'id': i['id'], 'image': image, 'item_name': item_name})
     print(item[0]['id'])
-    image_url = models.project.objects.get(id=id).project_image
+    project_image_url = models.project.objects.get(id=id).project_image
     # print(image_url)
-    project_data = {'project_image_url': image_url}
+    project_data = {'project_image_url': project_image_url}
     # print(chart_id)
     # ------------------------
     all_data = []  # 放每一個專案量測項目的資料
@@ -890,6 +982,7 @@ def display_data_timely(request, id):
         count_cl_x_data = [count_x_data[0], count_x_data[-1], '', count_x_data[0], count_x_data[-1]]
         count_cl_y_data = [item_upper, item_upper, '', item_lower, item_lower]
         count_range_x = [item_lower - (item_upper - item_lower) / 6, item_upper + (item_upper - item_lower) / 6]
+        name = '%s X-bar' % measure_item
         # print(count_viol_y_data, count_viol_x_data)
         # print(count_x_data, count_y_data)
         # ------------------------------------------
@@ -900,7 +993,7 @@ def display_data_timely(request, id):
                 'count_cl_x_data': count_cl_x_data, 'count_cl_y_data': count_cl_y_data,
                 'count_x_center_data': count_x_center_data, 'count_y_center_data': count_y_center_data,
                 'data': '量測數值', 'cl': '規格上限/規格下限', 'center': '規格中心', 'vol': '超出',
-                'item_name': str(measure_item)}
+                'item_name': str(name)}
         all_data.append(data)
     # print(all_data)
 

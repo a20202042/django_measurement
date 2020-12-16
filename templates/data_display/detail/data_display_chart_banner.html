@@ -4,7 +4,7 @@
     <div class="row">
         <div class="col-sm">
             <a class="image" style="height: 600px; width: 800px" onclick="show_project_image()">
-                <img style="height: 600px; width: 800px" src='/static/{{ project_data.project_image_url }}'
+                <img style="height: 600px; width: 800px" src='{{ MEDIA_URL }}{{ project_data.project_image_url }}'
                      align="center">
             </a>
         </div>
@@ -17,13 +17,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for item in all_measure_data %}
+                {% for item in item_data %}
                     <tr>
-                        <td>{{ item.measurement_items }}</td>
+                        <td style="vertical-align:revert;">{{ item.measurement_items }}</td>
                         <td>
                             <a class="image" style="height: 60px; width: 60px"
-                               onclick="show_item_image({{ item.id }})">
-                                <img style="height: 60px; width: 60px" src='/static/{{ item.image }}'>
+                               onclick="show_item_image({{ item.item_id }})">
+                                <img style="height: 60px; width: 60px; vertical-align: revert;"
+                                     src='{{ MEDIA_URL }}{{ item.image }}'>
                             </a>
                         </td>
                     </tr>
@@ -61,21 +62,25 @@
 </div>
 <div class="accordion">
     <div class="card ">
-        {% for item in all_measure_data %}
-            <div class="card-header ">
-                <h5 class="mb-0 ">
-                    <button class="button primary" type="button" data-toggle="collapse"
-                            data-target="#{{ item.id }}" aria-expanded="false" aria-controls="{{ item.id }}"
-                            style="width: 50%; font-family:Arial ; font-size: 18px">
-                        <p class="">{{ item.measurement_items }}</p>
-                    </button>
-                </h5>
+        {% for item in item_data %}
+            <div class="card-header">
+                <h2>
+                    <div class="row" style="align-content: revert">
+                        <a class="image" onclick="show_item_image({{ item.item_id }})"
+                           style="height: 120px; align-content: revert; width: 120px">
+                            <img src='{{ MEDIA_URL }}{{ item.image }}' style="align-content: revert">
+                        </a>
+                        <button class="button primary" type="button" data-toggle="collapse"
+                                data-target="#{{ item.item_id }}" aria-expanded="false"
+                                aria-controls="{{ item.item_id }}"
+                                style="height: 80px;width: 50%; font-family:Arial ; font-size: 18px; align-content: revert">
+                            <p class="">{{ item.measurement_items }}</p>
+                        </button>
+                    </div>
+                </h2>
             </div>
-            <div id="{{ item.id }}" class="collapse " data-parent="#accordionExample">
+            <div id="{{ item.item_id }}" class="collapse " data-parent="#accordionExample">
                 <div class="card-body">
-                    <a class="image" onclick="show_item_image({{ item.id }})" style="width: 100px">
-                        <img src='/static/{{ item.image }}' align="center">
-                    </a>
                     <table class="table table-bordered">
                         <thead>
                         <tr>
@@ -92,7 +97,7 @@
                         <tbody>
                         <tr align="center" valign="center">
                             <td class="vertical-align:revert">{{ item.measurement_items }}</td>
-                            <td style="vertical-align: revert">{{ item.too_name }} </td>
+                            <td style="vertical-align: revert">{{ item.tool_name }} </td>
                             <td style="vertical-align: revert">{{ item.specification_center }}</td>
                             <td style="vertical-align: revert">{{ item.upper_limit }}</td>
                             <td style="vertical-align: revert">{{ item.lower_limit }}</td>
@@ -103,34 +108,202 @@
                         </tbody>
                     </table>
                     <div>
-                        <div id='{{ item.id }}_x' style="width:80em"></div>
-                    </div>
-                    <div>
-                        <div id='{{ item.id }}_r' style="width:80em"></div>
-                    </div>
-                    <div>
-                        <div id="{{ item.id }}_c" style="width:80em"></div>
-                    </div>
-                    <div>
-                        <div id="{{ item.id }}_h" style="width: 80em"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal" id="{{ item.id }}_modal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                 aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-body">
-                            <img src='/static/{{ item.image }}' width="860px">
+                        <div class="">
+                            <div class="row">
+                                <div class="col-xl">
+                                    <div>
+                                        <div id='{{ item.item_id }}_x' style="width:70em"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xl" style="vertical-align: middle">
+                                    <div>
+                                        <table class="table table-bordered" style="vertical-align: revert">
+                                            <tbody>
+                                            <tr>
+                                                <td colspan="2"
+                                                    style="vertical-align: revert">{{ item.measurement_items }} <br>X
+                                                    bar
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">規格中心</td>
+                                                <td style="vertical-align: revert">{{ item.x_average }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">規格上限</td>
+                                                <td style="vertical-align: revert">{{ item.x_average }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">規格下限</td>
+                                                <td style="vertical-align: revert">{{ item.x_lcl }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">最大值</td>
+                                                <td style="vertical-align: revert">{{ item.x_max }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">最小值</td>
+                                                <td style="vertical-align: revert">{{ item.x_min }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">單位</td>
+                                                <td style="vertical-align: revert">{{ item.measure_unit }} </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="row">
+                                <div class="col-xl">
+                                    <div>
+                                        <div id='{{ item.item_id }}_r' style="width:70em"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xl" style="vertical-align: middle">
+                                    <div>
+                                        <table class="table table-bordered" style="vertical-align: revert">
+                                            <tbody>
+                                            <tr>
+                                                <td colspan="2"
+                                                    style="vertical-align: revert">{{ item.measurement_items }} <br>R
+                                                    bar
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">平均值</td>
+                                                <td style="vertical-align: revert">{{ item.r_avg }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">規格上限</td>
+                                                <td style="vertical-align: revert">{{ item.r_ucl }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">規格下限</td>
+                                                <td style="vertical-align: revert">{{ item.r_lul }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">最大值</td>
+                                                <td style="vertical-align: revert">{{ item.r_max }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">最小值</td>
+                                                <td style="vertical-align: revert">{{ item.r_min }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">Max-Min</td>
+                                                <td style="vertical-align: revert">{{ item.r_max_min }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">單位</td>
+                                                <td style="vertical-align: revert">{{ item.measure_unit }} </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="row">
+                                <div class="col-xl">
+                                    <div>
+                                        <div id="{{ item.item_id }}_c" style="width:70em"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xl" style="vertical-align: middle">
+                                    <div>
+                                        <table class="table table-bordered" style="vertical-align: revert">
+                                            <tbody>
+                                            <tr>
+                                                <td colspan="2"
+                                                    style="vertical-align: revert">{{ item.measurement_items }} <br>管制圖
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">規格中心</td>
+                                                <td style="vertical-align: revert">{{ item.specification_center }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">規格上限</td>
+                                                <td style="vertical-align: revert">{{ item.upper_limit }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">規格下限</td>
+                                                <td style="vertical-align: revert">{{ item.lower_limit }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">最大值</td>
+                                                <td style="vertical-align: revert">{{ item.max }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">最小值</td>
+                                                <td style="vertical-align: revert">{{ item.min }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">單位</td>
+                                                <td style="vertical-align: revert">{{ item.measure_unit }} </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="row">
+                                <div class="col-xl">
+                                    <div>
+                                        <div id="{{ item.item_id }}_h" style="width: 70em"></div>
+                                    </div>
+                                </div>
+                                <div class="col-xl" style="vertical-align: middle">
+                                    <div>
+                                        <table class="table table-bordered" style="vertical-align: revert">
+                                            <tbody>
+                                            <tr>
+                                                <td colspan="2"
+                                                    style="vertical-align: revert">{{ item.measurement_items }} <br>直方圖
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">全距</td>
+                                                <td style="vertical-align: revert">{{ item.r }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">組距</td>
+                                                <td style="vertical-align: revert">{{ item.h_group_pitch }}</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="vertical-align: revert">組數</td>
+                                                <td style="vertical-align: revert">{{ item.number }}</td>
+                                            </tr>
+{#                                            {% for i in item.h_list %}#}
+{#                                                <tr>#}
+{#                                                    <td style="vertical-align: revert">{{ i }}</td>#}
+{#                                                    <td style="vertical-align: revert">{{ i }}</td>#}
+{#                                                </tr>#}
+{#                                            {% endfor %}#}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <script language="JavaScript">
-                function item_image_show(id) {
-                    $('#{{ id }}_modal').modal('show')
-                }
-            </script>
+            <div class="modal" id="{{ item.item_id }}_modal" tabindex="-1" aria-labelledby="exampleModalLabel"  aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <img src='{{ MEDIA_URL }}{{ item.image }}' width="860px">
+                        </div>
+                    </div>
+                </div>
+            </div>
         {% endfor %}
     </div>
 </div>
@@ -138,14 +311,15 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-body">
-                <img src='/static/{{ project_data.project_image_url }}' width="860px">
+                <img src='{{ MEDIA_URL }}{{ project_data.project_image_url }}' width="860px">
             </div>
         </div>
     </div>
 </div>
 <script language="JavaScript">
     var data =
-    {{ all_data |safe }}
+    {{ all_data |safe }};
+    alert(data);
     for (i in data) {
         TESTER = document.getElementById(data[i]['x_name']);
         var Data_x = {
@@ -391,14 +565,14 @@
             name: 'Primary Product',
             marker: {
                 color: 'rgb(49,130,189)',
-                opacity: 0.7,
+                opacity: 1.0,
             }
         };
 
         var data_h = [trace1_h];
 
         var layout_h = {
-            title: '2013 Sales Report',
+            title: data[i]['h_chart_name'],
             xaxis: {
                 {#tickangle: -45#}
             },
@@ -410,12 +584,16 @@
         Plotly.newPlot(data[i]['h_name'], data_h, layout_h);
     }
 
+
+</script>
+<script language="JavaScript">
     function show_project_image() {
         $('#chart_modal').modal('show');
     }
 
     function show_item_image(item) {
         name = '#' + item + '_modal'
+        alert(name)
         $(name).modal('show');
     }
 </script>

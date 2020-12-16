@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col-sm">
             <a class="image" onclick="show_test()" style="width: 700px">
-                <img src='/static/{{ project_data.project_image_url }}' align="center">
+                <img src='{{ MEDIA_URL }}{{ project_data.project_image_url }}' align="center">
             </a>
         </div>
         <div class="col-sm">
@@ -131,15 +131,15 @@
 <div class="modal" id="report_modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-
             <div class="modal-body">
-                <img src='/static/{{ project_data.project_image_url }}' width="860px">
+                <img src='{{ MEDIA_URL }}{{ project_data.project_image_url }}' width="860px">
             </div>
         </div>
     </div>
 </div>
 
 <script language="JavaScript">
+
     function show_test() {
         $('#report_modal').modal('show');
     }
@@ -147,10 +147,12 @@
     var data = [{
         values: {{yid_list | safe}},
         labels: ['良率', '不良率'],
-        type: 'pie'
-    }];
+        type: 'pie',
+        automargin: true,
 
+    }];
     var layout = {
+        title: {{ pie_chart_name | safe}},
         height: 400,
         width: 400
     };

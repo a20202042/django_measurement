@@ -1,28 +1,28 @@
 {% load static %}
 <div>
-    <div class="row">
+    <div class="row inner">
         <div class="col-sm">
             <a class="image" style="height: 600px; width: 800px" onclick="show_project_image()">
-                <img style="height: 600px; width: 800px" src='/static/{{ project_data.project_image_url }}'
+                <img style="height: 600px; width: 800px" src='{{ MEDIA_URL }}{{ project_data.project_image_url }}'
                      align="center">
             </a>
         </div>
         <div class="col-sm">
             <table class="table table-bordered">
                 <thead>
-                <tr>
-                    <th scope="col" style="vertical-align: revert">量測項目名稱</th>
+                <tr class="inner">
+                    <th scope="col" style="vertical-align: revert; display: flex;">量測項目名稱</th>
                     <th scope="col" style="vertical-align: revert">量測項目圖示</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for i in chart_id %}
                     <tr>
-                        <td style="vertical-align: revert">{{ i.item_name }}</td>
+                        <td style="vertical-align: revert;">{{ i.item_name }}</td>
                         <td style="vertical-align: revert">
                             <a class="image" style="height: 60px; width: 60px"
                                onclick="show_item_image({{ i.id }})">
-                                <img style="height: 60px; width: 60px" src="/static/{{ i.image }}">
+                                <img style="height: 60px; width: 60px" src="{{ MEDIA_URL }}{{ i.image }}">
                             </a>
                         </td>
                     </tr>
@@ -31,7 +31,7 @@
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-body">
-                                    <img src='/static/{{ i.image }}' width="860px">
+                                    <img src='{{ MEDIA_URL }}{{ i.image }}' width="860px">
                                 </div>
                             </div>
                         </div>

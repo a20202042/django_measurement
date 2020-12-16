@@ -734,7 +734,7 @@ hr.major {
     }
 
     .row > * {
-        padding: 0 0 0 1.5em;
+        padding: 0 0 0 0.5em;
     }
 
     .row.gtr-uniform {
@@ -2389,7 +2389,7 @@ table tbody tr:nth-child(2n + 1) {
 }
 
 table td {
-    text-align: center;
+    /*text-align: center;*/
     padding: 0.75em 0.75em;
 }
 

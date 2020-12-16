@@ -21,18 +21,16 @@
             量測點數：{{ measure_number }}<br>
             量測小數點位數：{{ decimal_piaces }}<br>
             量測單位：{{ measure_unit }}<br>
-            <img src="/static/{{ image }}" width='500' height="500" align="center">
+            <img src="{{ MEDIA_URL }}{{ image }}" width='500' height="500" align="center">
         </p>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn " data-dismiss="modal"
-{#                style="box-shadow: none" 外框隱藏#}
-        >
+        <button type="button" class="btn primary" data-dismiss="modal">
             關閉
         </button>
         <button type="submit" class="btn"
-                style="color:whitesmoke">
-            刪除量測項目
+                style="background:  #d9534f; box-shadow:inset 0 0 0 2px #d9534f;">
+            <span style="color: white" class="glyphicon glyphicon-trash"> 刪除量測項目</span>
         </button>
     </div>
 </form>
