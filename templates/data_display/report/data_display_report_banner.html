@@ -7,7 +7,27 @@
             </a>
         </div>
         <div class="col-sm">
-            <div id="test"></div>
+            <div class="col">
+                <div id="test"></div>
+            </div>
+        </div>
+        <div class="col-sm" style="align-content: center">
+            <table class="table table-bordered" align="center">
+                <thead>
+                <tr align="center" valign="center">
+                    <th>良品數</th>
+                    <th style="color: #3c763d;">{{ go_nogo_data.go }}</th>
+                </tr>
+                <tr align="center" valign="center">
+                    <th>不良品數</th>
+                    <th style="color:red">{{ go_nogo_data.nogo }}</th>
+                </tr>
+                <tr align="center" valign="center">
+                    <th>總產品數</th>
+                    <th style="color: #000000;">{{ go_nogo_data.all }}</th>
+                </tr>
+                </thead>
+            </table>
         </div>
     </div>
 </div>
@@ -25,7 +45,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
+        <tr align="center" valign="center">
             <td>{{ project_name }}</td>
             <td>{{ project_data.man }}</td>
             <td>{{ project_data.create_date }}</td>
@@ -42,7 +62,7 @@
         <div class="col-sm">
             <table class="table table-bordered">
                 <thead>
-                <tr>
+                <tr align="center" valign="center">
                     <th scope="col">項目名稱</th>
                     <th scope="col">規格上限</th>
                     <th scope="col">規格中心</th>
@@ -55,7 +75,7 @@
                 </thead>
                 <tbody>
                 {% for r in all_data %}
-                    <tr>
+                    <tr align="center" valign="center">
                         <td>{{ r.item_name }}</td>
                         <td>{{ r.upper_limit }}</td>
                         <td>{{ r.center }}</td>
@@ -73,53 +93,53 @@
         <div class="col-sm">
             <table class="table table-bordered">
                 <thead>
-                <tr>
-                    <th scope="col">等級</th>
-                    <th scope="col">Cpk</th>
+                <tr align="center" valign="center">
                     <th scope="col">等級</th>
                     <th scope="col">Ca</th>
                     <th scope="col">等級</th>
                     <th scope="col">Cp</th>
+                    <th scope="col">等級</th>
+                    <th scope="col">Cpk</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td style="color: white; background-color:seagreen;">A+</td>
-                    <td>1.67 ≤ Cpk</td>
+                <tr align="center" valign="center">
                     <td style="color: white; background-color:seagreen;">A</td>
                     <td>|Ca| ≤ 12.5%</td>
                     <td style="color: white; background-color:seagreen;">A+</td>
                     <td>1.67 ≤ Cp</td>
+                    <td style="color: white; background-color:seagreen;">A+</td>
+                    <td>1.67 ≤ Cpk</td>
                 </tr>
-                <tr>
-                    <td style="color: whitesmoke; background-color:mediumseagreen">A</td>
-                    <td>1.33 ≤ Cpk < 1.67</td>
+                <tr align="center" valign="center">
                     <td style="color: whitesmoke; background-color:mediumseagreen">B</td>
                     <td>12.5% < |Ca| ≤ 25%</td>
                     <td style="color: whitesmoke; background-color:mediumseagreen">A</td>
                     <td>1.33 ≤ Cp < 1.67</td>
+                    <td style="color: whitesmoke; background-color:mediumseagreen">A</td>
+                    <td>1.33 ≤ Cpk < 1.67</td>
                 </tr>
-                <tr>
-                    <td style="color: whitesmoke; background-color:dodgerblue">B</td>
-                    <td>1.0 ≤ Cpk < 1.133</td>
+                <tr align="center" valign="center">
                     <td style="color: whitesmoke; background-color:dodgerblue">C</td>
                     <td>25% < |Ca| ≤ 50%</td>
                     <td style="color: whitesmoke; background-color:dodgerblue">B</td>
                     <td>1.0 ≤ Cp < 1.133</td>
+                    <td style="color: whitesmoke; background-color:dodgerblue">B</td>
+                    <td>1.0 ≤ Cpk < 1.133</td>
                 </tr>
-                <tr>
-                    <td style="color: whitesmoke; background-color:orange">C</td>
-                    <td>0.67 ≤ Cpk < 1.0</td>
+                <tr align="center" valign="center">
                     <td style="color: whitesmoke; background-color:orange">B</td>
                     <td>50% < |Ca|</td>
                     <td style="color: whitesmoke; background-color:orange">C</td>
                     <td>0.67 ≤ Cpk < 1.0</td>
+                    <td style="color: whitesmoke; background-color:orange">C</td>
+                    <td>0.67 ≤ Cpk < 1.0</td>
                 </tr>
-                <tr>
+                <tr align="center" valign="center">
+                    <td></td>
+                    <td></td>
                     <td style="color: whitesmoke; background-color:pink">D</td>
                     <td>Cpk < 0.67</td>
-                    <td></td>
-                    <td></td>
                     <td style="color: whitesmoke; background-color:pink">D</td>
                     <td>Cpk < 0.67</td>
                 </tr>

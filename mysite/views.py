@@ -443,6 +443,7 @@ def data_display_project(request):
     # print(value_number)
     for i in measure_value:
         if i.measure_project not in project:
+            measure_id = models.measure_items.objects.filter(project_measure_id=i.measure_project_id).values('id')
             data['project'] = i.measure_project.project_name
             data['project_id'] = i.measure_project.id
             data['value_update_time'] = i.time_now
@@ -454,14 +455,8 @@ def data_display_project(request):
             data['measure_man'] = i.measure_man
             data['project_create_time'] = models.project.objects.get(id=i.measure_project_id).project_create_date
             data['measure_number'] = value_number
-            print(len(models.measure_values.objects.filter(measure_project_id=i.measure_project_id).values(
-                'measure_name_id')))
-            print(len(
-                models.measure_items.objects.filter(project_measure_id=i.measure_project_id).values('measure_number')))
-            data['number'] = int(len(
-                models.measure_values.objects.filter(measure_project_id=i.measure_project_id).values('measure_name_id')) \
-                                 / len(
-                models.measure_items.objects.filter(project_measure_id=i.measure_project_id).values('measure_number')))
+            data['number'] = int(len(models.measure_values.objects.filter(measure_name_id=measure_id[0]['id']).values(
+                'measure_value')) / int(models.measure_items.objects.get(id=measure_id[0]['id']).measure_number))
             time.append(i.time_now)
             project.append(i.measure_project)
             # print(len(models.measure_values.objects.filter(measure_project_id=i.measure_project_id))/
@@ -502,6 +497,8 @@ def display_all_measure_data_chart(request, id):
 
     # ----------------------------
     all_data = []
+    item_data = []
+    chart_data = []
     a2_data = {'1': 1, '3': 1.023, '5': 0.577, '7': 0.419}
     d4_data = {'1': 1, '3': 2.575, '5': 2.115, '7': 1.924}
     d3_data = {'1': 1, '3': 0, '5': 0, '7': 0.076}
@@ -540,7 +537,7 @@ def display_all_measure_data_chart(request, id):
             r_y_data.append(numpy.max(i) - numpy.min(i))
         r = statistics.mean(r_y_data)
         x = statistics.mean(x_y_data)
-        print(measure_count)
+        # print(measure_count)
         a2 = a2_data[str(measure_count)]
         x_ucl = round(x + a2 * r, 3)  # x上限計算
         x_lcl = round(x - a2 * r, 3)  # x下限計算
@@ -648,8 +645,40 @@ def display_all_measure_data_chart(request, id):
         h_chart_name = '%s_直方圖' % item_name
         # print(h_t_y_data, h_t_x_data, h_y_range)
 
-        # -----------------------------------------------
-
+        # -----------------------------------------------抓取圖表旁表單資料
+        x_min = numpy.min(count_y_data)
+        x_max = numpy.max(count_y_data)
+        x_max_min = round(numpy.max(count_y_data) - numpy.min(count_y_data), 3)
+        x_chart_center = x
+        x_chart_lower = x_lcl
+        x_chart_upper = x_ucl
+        x_chart_min = numpy.min(x_y_data)
+        x_chart_max = numpy.max(x_y_data)
+        x_chart_min_max = x_chart_max - x_chart_min
+        r_chart_avg = round(statistics.mean(r_y_data), 2)
+        r_chart_max = round(numpy.max(r_y_data), 3)
+        r_chart_min = round(numpy.min(r_y_data), 3)
+        r_chart_max_min = round(numpy.max(r_y_data) - (numpy.min(r_y_data)), 3)
+        r_chart_lower = r_lcl
+        r_chart_upper = r_ucl
+        h_chart_rang = {}
+        h_chart_median = {}
+        h_group_pitch = round(float(h_range[0][1] - h_range[0][0]), 3)
+        h_full_range = round(x_max - x_min, 3)
+        print(h_range)
+        for i in h_range:
+            print(i)
+            h_chart_rang.update({str(h_range.index(i)): "%s ~ %s" % (round(i[0], 2), round(i[1], 2))})
+            h_chart_median.update({str(h_range.index(i)): h_t_y_data[h_range.index(i)]})
+        chart_data.append({
+            'x_chart_center': x_chart_center, "x_chart_lower": x_chart_lower, "x_chart_upper": x_chart_upper,
+            'x_chart_min': x_chart_min, 'x_chart_max': x_chart_max, 'x_chart_min_max': x_chart_min_max,
+            'r_chart_avg': r_chart_avg, 'r_chart_lower': r_chart_lower, 'r_chart_upper': r_chart_upper,
+            'r_chart_max': r_chart_max, 'r_chart_min': r_chart_min, 'r_chart_max_min': r_chart_max_min,
+            'x_min': x_min, 'x_max': x_max, 'h_chart_range': h_chart_rang, 'h_chart_median': h_chart_median,
+            'h_group_pitch':h_group_pitch,'h_full_range':h_full_range, 'x_max_min':x_max_min
+        })
+        print(chart_data)
         # -----------------------------------------------
         data = {
             'x_name': item_id_x, 'x_title': '%sX-bar' % item_name,
@@ -672,10 +701,12 @@ def display_all_measure_data_chart(request, id):
             'c_x_range': count_range_x,
             'data': '量測數值', 'cl': '規格上限/規格下限', 'center': '規格中心', 'vol': '超出',
             'h_t_x_data': h_t_x_data, 'h_t_y_data': h_t_y_data,
-            'h_chart_name': h_chart_name, 'h_y_range': h_y_range,'h_name':h_name
+            'h_chart_name': h_chart_name, 'h_y_range': h_y_range, 'h_name': h_name,
+            'x_chart_center': x_chart_center, "x_chart_lower": x_chart_lower, "x_chart_upper": x_chart_upper,
+            'x_chart_min': x_chart_min, 'x_chart_max': x_chart_max
         }
         all_data.append(data)
-    item_data = []
+    n = 0
     for item in measure_item:
         item_id = item['id']
         item_name = models.measure_items.objects.get(id=item['id']).measurement_items
@@ -743,12 +774,19 @@ def display_all_measure_data_chart(request, id):
         #         h_range.append(round(i, 2))
         #     print(h_range)
         #     # ----------------字典上傳
+        # print('123')
+        # print(number)
         data = {'item_id': item_id, 'measurement_items': item_name,
                 'tool_name': measure_tool,
                 'specification_center': center,
                 'upper_limit': upper_limit, 'lower_limit': lower_limit,
                 'measure_number': number, 'measure_points': point,
                 'measure_unit': unit, 'image': image_url}
+        # print(chart_data)
+        data.update(chart_data[n])
+        print(data)
+        n = n + 1
+        # print(chart_data[number])
         item_data.append(data)
     #             'x_average': x_average, 'x_ucl': x_ucl, 'x_lcl': x_lcl, 'x_max': x_max,
     #             'x_min': x_min, 'r_avg': r_avr, 'r_ucl': r_ucl, 'r_lul': r_lcl, 'r_max': r_max,
@@ -771,6 +809,8 @@ def display_all_measure_data_chart(request, id):
 
 def display_all_report(request, id):
     # ------------------------------------
+    measure_item_data = models.measure_items.objects.filter(project_measure_id=id).values('id')
+    print(measure_item_data[0]['id'])
     measure_item = models.measure_items.objects.filter(project_measure_id=id).values('id')
     project_name = models.project.objects.get(id=id).project_name
     man = models.project.objects.get(id=id).founder_name
@@ -781,9 +821,12 @@ def display_all_report(request, id):
     measure_value_man_id = models.measure_values.objects.filter(measure_project_id=id).values('measure_man', 'time_now')
     measure_man = measure_value_man_id[0]['measure_man']
     update_time = measure_value_man_id[0]['time_now']
-    measure_count = len(models.measure_values.objects.filter(measure_project_id=id).values('measure_value')) \
+    measure_count = len(
+        models.measure_values.objects.filter(measure_name_id=measure_item_data[0]['id']).values('measure_value')) \
                     / int(
-        models.measure_items.objects.filter(project_measure_id=id).values('measure_number')[0]['measure_number'])
+        models.measure_items.objects.get(id=str(measure_item_data[0]['id'])).measure_number)
+    print(len(
+        models.measure_values.objects.filter(measure_project_id=measure_item_data[0]['id']).values('measure_value')))
     # print(measure_count)
     project_data = {'project_name ': project_name, 'man': man,
                     'create_date': create_date, 'remake': remake,
@@ -828,24 +871,27 @@ def display_all_report(request, id):
         for i in measure_all_data:
             average_data.append(statistics.mean(i))
         x = statistics.mean(average_data)
-        ca = abs((x - specification_center) / (t / 2))
+        ca = abs((x - specification_center) / (t / 2)) * 0.01
         stdev = statistics.stdev(average_data)  # 標準差
         print(upper_limit, lower_limit)
         print(average_data)
         cp = (upper_limit - lower_limit) / (6 * stdev)
         cpk = cp * (1 - ca)
+        print(cpk)
+        print(ca)
+        print(cp)
         # --------------------------------------------顏色判別
         ca_color = str()
         cpk_color = str()
         cp_color = str()
         if abs(ca) <= float(0.125):
-            ca_color = color['A']
+            ca_color = color['A+']
         elif abs(ca) > float(0.125) and abs(ca) <= float(0.25):
-            ca_color = color['B']
+            ca_color = color['A']
         elif abs(ca) > float(0.25) and abs(ca) <= float(0.5):
-            ca_color = color['C']
+            ca_color = color['B']
         elif abs(ca) > float(0.5):
-            ca_color = color['D']
+            ca_color = color['C']
 
         if abs(cp) >= 1.67:
             cp_color = color['A+']
@@ -927,6 +973,9 @@ def display_all_report(request, id):
     print(yid_check_data, defective)
     yid_list = json.dumps([y, defective])
     pie_chart_name = json.dumps(str('%s 良率 / 不良率' % project_name))
+    go_nogo_data = {
+        'go': good_number, 'nogo': broken_number, 'all': good_number + broken_number
+    }
     # ------------------------------------------
     return render(request, 'data_display/report/data_display_report.html', locals())
 

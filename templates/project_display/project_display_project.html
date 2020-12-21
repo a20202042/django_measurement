@@ -11,8 +11,19 @@
         <div class="inner">
             {% include 'project_display/project_delet_menu_name.html' %}
             <div>
+                <table class="table table-bordered" id="project_table">
+                    <thead>
+                    <tr align="center" valign="center">
+                        <th scope="col"> 專案名稱</th>
+                        <th scope="col">建立時間</th>
+                        <th scope="col">建立人</th>
+                        <th scope="col">備註</th>
+                        <th scope="col">專案圖示</th>
+                        <td></td>
+                    <tbody>
                     {% include 'project_display/project_banner.html' %}
-
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
