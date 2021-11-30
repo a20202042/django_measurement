@@ -856,6 +856,7 @@ def display_all_report(request, id):
         all_value = models.measure_values.objects.filter(measure_name_id=item['id']).values('measure_value')
         measure_count = models.measure_items.objects.get(id=item['id']).measure_number
         number = 0
+        all_data_test = []
         data = []
         measure_all_data = []
         average_data = []
@@ -863,6 +864,7 @@ def display_all_report(request, id):
         for i in all_value:
             number = number + 1
             data.append(i['measure_value'])
+            all_data_test.append(i['measure_value'])
             # print(data)
             if int(measure_count) == number:
                 number = 0
@@ -870,11 +872,12 @@ def display_all_report(request, id):
                 data = []
         for i in measure_all_data:
             average_data.append(statistics.mean(i))
-        x = statistics.mean(average_data)
-        ca = abs((x - specification_center) / (t / 2)) * 0.01
-        stdev = statistics.stdev(average_data)  # 標準差
+        x = statistics.mean(all_data_test)
+        print(x)
+        ca = abs((x - specification_center) / (t / 2))
+        stdev = statistics.stdev(all_data_test)  # 標準差
         print(upper_limit, lower_limit)
-        print(average_data)
+        print(all_data_test)
         cp = (upper_limit - lower_limit) / (6 * stdev)
         cpk = cp * (1 - ca)
         print(cpk)
