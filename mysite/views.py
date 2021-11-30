@@ -35,19 +35,6 @@ def project_display_item(requset, x=None):
     return render(requset, 'project_display/project_display_item.html', locals())
 
 
-# def delet(requset, id=None):
-#     projects = models.project.objects.all()
-#     if id:
-#         try:
-#             post = models.project.objects.get(id=id)
-#             print(post)
-#             post.delete()
-#             print("刪除資料")
-#         except:
-#             id = None
-#             print("資料未刪除")
-#     return redirect('/project_display/project')
-
 def measure_item_image_show(request, id):
     image_file = models.measure_items.objects.get(id=id)
     print(image_file.image)
@@ -103,55 +90,30 @@ def delet_tool(request, id):
     return JsonResponse(data)
 
 
-def delet_work_order(request, id):
-    work_order = models.measurement_work_order_create.objects.get(id=id)
-    data = dict()
-    if request.method == 'POST':
-        work_order.delete()
-        data['form_is_valid'] = True
-        work_orders = models.measurement_work_order_create.objects.all()
-        data['html_work_order_list'] = render_to_string(
-            'project_display/work_order_banner.html',
-            {'work_order': work_orders})
-    else:
-        context = {
-            'project': work_order.project_measure,
-            'work_order': work_order.sor_no, 'id': work_order.id,
-            'number_of_parts': work_order.part_no, 'materials': work_order.materials,
-            'manufacturing_machine': work_order.manufacturing_machine, 'batch_number': work_order.batch_number,
-            'Class': work_order.Class, 'inspector': work_order.inspector,
-            'remake': work_order.remake
-        }
-        data['html_form'] = render_to_string(
-            'project_display/delet/delet_work_order.html',
-            context, request=request)
-
-    return JsonResponse(data)
-
-
-def delet_project(request, id):
-    project = models.project.objects.get(id=id)
-    data = dict()
-    if request.method == 'POST':
-        print(project.project_image)
-        # models.file_delet(project.project_image)
-        project.delete()
-        data['form_is_valid'] = True
-        projects = models.project.objects.all()
-        data['html_project_list'] = render_to_string(
-            'project_display/project_banner.html',
-            {'projects': projects})
-    else:
-        context = {'project': project,
-                   'project_name': project.project_name,
-                   'founder_name': project.founder_name,
-                   'time': project.project_create_date,
-                   'remake': project.remake,
-                   'project_image': project.project_image}
-        data['html_form'] = render_to_string(
-            'project_display/delet/delet_project.html',
-            context, request=request)
-    return JsonResponse(data)
+# def delet_work_order(request, id):
+#     work_order = models.measurement_work_order_create.objects.get(id=id)
+#     data = dict()
+#     if request.method == 'POST':
+#         work_order.delete()
+#         data['form_is_valid'] = True
+#         work_orders = models.measurement_work_order_create.objects.all()
+#         data['html_work_order_list'] = render_to_string(
+#             'project_display/work_order_banner.html',
+#             {'work_order': work_orders})
+#     else:
+#         context = {
+#             'project': work_order.project_measure,
+#             'work_order': work_order.sor_no, 'id': work_order.id,
+#             'number_of_parts': work_order.part_no, 'materials': work_order.materials,
+#             'manufacturing_machine': work_order.manufacturing_machine, 'batch_number': work_order.batch_number,
+#             'Class': work_order.Class, 'inspector': work_order.inspector,
+#             'remake': work_order.remake
+#         }
+#         data['html_form'] = render_to_string(
+#             'project_display/delet/delet_work_order.html',
+#             context, request=request)
+#
+#     return JsonResponse(data)
 
 
 def update_work_order(request, id):
@@ -172,27 +134,6 @@ def update_work_order(request, id):
     context = {'form': form}
     data['html_form'] = render_to_string(
         'project_display/update/update_work_order.html',
-        context, request=request)
-    return JsonResponse(data)
-
-
-def update_project(request, id):
-    project = get_object_or_404(models.project, id=id)
-    data = dict()
-    if request.method == 'POST':
-        form = forms.Project(request.POST, instance=project)
-        if form.is_valid():
-            form.save()
-            data['form_is_valid'] = True
-            projects = models.project.objects.all()
-            data['html_project_list'] = render_to_string(
-                'project_display/project_banner.html',
-                {'projects': projects})
-    else:
-        form = forms.Project(instance=project)
-    context = {'form': form}
-    data['html_form'] = render_to_string(
-        'project_display/update/update_project.html',
         context, request=request)
     return JsonResponse(data)
 
@@ -241,15 +182,186 @@ def update_item(request, id):
     return JsonResponse(data)
 
 
-def project_form(request):
+# 2021 將專案修改
+def project_menage(request):
+    projects = models.project.objects.all()
     project_form = forms.Project()
     if request.method == 'POST':
         project_form = forms.Project(request.POST, request.FILES)
         if project_form.is_valid():
             project_form.save()
-            return HttpResponseRedirect('/form_work_order')
+            return HttpResponseRedirect('/project_menage')
     return render(request, 'form/form_project.html', locals())
 
+
+def create_measure_item(request, id):
+    measure_item_from = forms.measure_item(initial={'project': str(id)})
+    project_measure_items = models.measure_items.objects.filter(project=id).values()
+    project = models.project.objects.get(id=id)
+    if request.method == 'POST':
+        measure_item_from = forms.measure_item(request.POST, request.FILES)
+        if measure_item_from.is_valid():
+            measure_item_from.save()
+            image_url = str(measure_item_from.instance.image.file)
+            print(image_url)
+            with open(image_url, 'rb') as file:
+                image = file.read()
+                image_base64_data = base64.b64encode(image)
+                image_base64_data = str(image_base64_data, 'utf-8')
+                measure_id = models.measure_items.objects.latest('id').id
+                measure_item = models.measure_items.objects.get(id=measure_id)
+                measure_item.image_base64_data = image_base64_data
+                measure_item.save()
+            return HttpResponseRedirect('/project_menage/create_measure_item/' + id)
+    return render(request, 'project_measure_item_create/project_id_measure_item_create.html', locals())
+
+
+def project_item_delet_js(request, id):
+    print("delet")
+    project_item = models.measure_items.objects.get(id=id)
+    data = dict()
+    print(id)
+    if request.method == 'POST':
+        data['form_is_valid'] = True
+        project_id = models.measure_items.objects.get(id=id).project_id
+        print(project_id)
+        project_item.delete()
+        project_measure_items = models.measure_items.objects.filter(project_id=project_id).all()
+        data['html_project_item_list'] = render_to_string(
+            'project_measure_item_create/project_item_banner.html',
+            {'project_measure_items': project_measure_items}
+        )
+    else:
+        context = {'id': id,
+                   'measure_item': project_item.measurement_items
+                   }
+        data['html_form'] = render_to_string(
+            'project_measure_item_create/delet_project_measure_item_js.html', context,
+            request=request)
+    return JsonResponse(data)
+
+
+def project_measure_item_update_js(request, id):
+    print(id)
+    measure_item = get_object_or_404(models.measure_items, id=id)
+    data = dict()
+    if request.method == 'POST':
+        form = forms.measure_item(request.POST, instance=measure_item)
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            project_id = models.measure_items.objects.get(id=id).project_id
+            print(project_id)
+            project_measure_items = models.measure_items.objects.filter(project_id=project_id).all()
+            data['html_project_item_list'] = render_to_string('project_measure_item_create/project_item_banner.html',
+                                                              {'project_measure_items': project_measure_items})
+    else:
+        form = forms.measure_item(instance=measure_item)
+        context = {'form': form}
+        data['html_form'] = render_to_string('project_measure_item_create/update_project_measure_item.html', context,
+                                             request=request)
+    return JsonResponse(data)
+
+
+def project_create(request):
+    if request.method == 'POST':
+        form = forms.Project(request.POST)
+    else:
+        form = forms.Project()
+    return save_project_form(request, form, 'project_display/partial_project_create.html')
+
+
+def save_project_form(request, form, template_name):
+    data = dict()
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            projects = models.project.objects.all()
+            data['html_project_list'] = render_to_string(
+                'project_display/project_banner.html',
+                {'projects': projects})
+        else:
+            data['form_is_valid'] = False
+    context = {'form': form}
+    data['html_form'] = render_to_string(template_name, context, request=request)
+    return JsonResponse(data)
+
+
+def delet_project(request, id):
+    project = models.project.objects.get(id=id)
+    data = dict()
+    if request.method == 'POST':
+        print(project.project_image)
+        # models.file_delet(project.project_image)
+        project.delete()
+        data['form_is_valid'] = True
+        projects = models.project.objects.all()
+        data['html_project_list'] = render_to_string(
+            'project_display/project_banner.html',
+            {'projects': projects})
+    else:
+        context = {'project': project,
+                   'project_name': project.project_name,
+                   'founder_name': project.founder_name,
+                   'time': project.project_create_date,
+                   'remake': project.remake,
+                   'project_image': project.project_image}
+        data['html_form'] = render_to_string(
+            'project_display/delet/delet_project.html',
+            context, request=request)
+    return JsonResponse(data)
+
+
+def update_project(request, id):
+    project = get_object_or_404(models.project, id=id)
+    data = dict()
+    if request.method == 'POST':
+        form = forms.Project(request.POST, instance=project)
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            projects = models.project.objects.all()
+            data['html_project_list'] = render_to_string(
+                'project_display/project_banner.html',
+                {'projects': projects})
+    else:
+        form = forms.Project(instance=project)
+    context = {'form': form}
+    data['html_form'] = render_to_string(
+        'project_display/update/update_project.html',
+        context, request=request)
+    return JsonResponse(data)
+
+
+def work_order_display(request):
+    work_order_form = forms.Work_order()
+    work_orders = models.measurement_work_order.objects.all()
+    if request.method == 'POST':
+        work_order_form = forms.Work_order(request.POST)
+        if work_order_form.is_valid():
+            work_order_form.save()
+            insert_work_order = models.measurement_work_order.objects.latest('id')
+            insert_work_order_id = insert_work_order.id
+            insert_work_order_project = insert_work_order.project_measure_id
+            measure_items = models.measure_items.objects.filter(project=insert_work_order_project).values()
+            for project_measure_item in measure_items:
+                work_order_measure_item = models.work_order_measure_items(
+                    tool_name_id=project_measure_item['tool_name_id'],
+                    measure_unit=project_measure_item['measure_unit'],
+                    measurement_items=project_measure_item['measurement_items'],
+                    upper_limit=project_measure_item['upper_limit'],
+                    lower_limit=project_measure_item['lower_limit'],
+                    specification_center=project_measure_item['specification_center'],
+                    measure_number=project_measure_item['measure_number'],
+                    decimal_piaces=project_measure_item['decimal_piaces'],
+                    image=project_measure_item['image'],
+                    measurement_work_order_id=insert_work_order_id
+                )
+                work_order_measure_item.save()
+                # print(project_measure_item)
+            return HttpResponseRedirect('/work_order')
+    return render(request, 'work_order/work_order_display.html', locals())
 
 def work_order(request):
     work_order_form = forms.Work_order()
@@ -257,10 +369,114 @@ def work_order(request):
         work_order_form = forms.Work_order(request.POST)
         if work_order_form.is_valid():
             work_order_form.save()
-            print('ok')
             return HttpResponseRedirect('/form_measure_tool')
     return render(request, 'form/from_work_order_create.html', locals())
 
+def work_order_delet(request, id):
+    work_order = models.measurement_work_order.objects.get(id=id)
+    data = dict()
+    if request.method == 'POST':
+        work_order.delete()
+        data['form_is_valid'] = True
+        work_orders = models.measurement_work_order.objects.all()
+        data['html_item_list'] = render_to_string('work_order/work_order_banner.html', {'work_orders': work_orders})
+    else:
+        context = {'work_order': work_order}
+        data['html_form'] = render_to_string('work_order/work_order_delet_js.html',
+                                             context, request=request)
+    return JsonResponse(data)
+
+def work_order_update(request, id):
+    work_order = get_object_or_404(models.measurement_work_order, id=id)
+    data = dict()
+    if request.method == 'POST':
+        form = forms.Work_order(request.POST, instance=work_order)
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            work_orders = models.measurement_work_order.objects.all()
+            data['html_item_list'] = render_to_string('work_order/work_order_banner.html', {'work_orders': work_orders})
+    else:
+        form = forms.Work_order(instance=work_order)
+    context = {'form': form}
+    data['html_form'] = render_to_string('work_order/work_order_update.html', context, request=request)
+    return JsonResponse(data)
+    # print(id)
+
+
+def work_measure_item_display(request, id):
+    project_id = models.measurement_work_order.objects.get(id=id).project_measure_id
+    project = models.project.objects.get(id=project_id)
+    work_order_measure_items = models.work_order_measure_items.objects.filter(measurement_work_order_id=id).values()
+    return render(request, 'work_order_item/work_order_measure_item.html', locals())
+
+
+def work_order_item_delet_js(request, id):
+    work_order_item = models.work_order_measure_items.objects.get(id=id)
+    data = dict()
+    if request.method == 'POST':
+        data['form_is_valid'] = True
+        work_id = models.work_order_measure_items.objects.get(id=id).measurement_work_order_id
+        work_order_item.delete()
+        work_order_measure_items = models.work_order_measure_items.objects.filter(
+            measurement_work_order_id=work_id)
+        data['html_item_list'] = render_to_string('work_order_item/work_order_measure_item_banner.html',
+                                                  {'work_order_measure_items': work_order_measure_items})
+    else:
+        context = {'work_order_item': work_order_item}
+        data['html_form'] = render_to_string('work_order_item/work_order_delet_js.html', context, request=request)
+    return JsonResponse(data)
+
+
+def work_order_measure_item_update(request, id):
+    work_measure_item = get_object_or_404(models.work_order_measure_items, id=id)
+    data = dict()
+    if request.method == 'POST':
+        form = forms.work_measure_item(request.POST, instance=work_measure_item)
+        if form.is_valid():
+            form.save()
+            data['form_is_valid'] = True
+            work_id = models.work_order_measure_items.objects.get(id=id).measurement_work_order_id
+            work_order_measure_items = models.work_order_measure_items.objects.filter(
+                measurement_work_order_id=work_id)
+            data['html_item_list'] = render_to_string('work_order_item/work_order_measure_item_banner.html',
+                                                      {"work_order_measure_items": work_order_measure_items})
+    else:
+        form = forms.work_measure_item(instance=work_measure_item)
+    context = {"form": form}
+    data['html_form'] = render_to_string('work_order_item/work_order_measure_item_update_js.html', context,
+                                         request=request)
+    return JsonResponse(data)
+
+def measure_work_order_data_display(request):
+    measure_value = models.measure_values.objects.all()
+    # print(measure_value)
+    work_order_id_all = []
+    work_order_all = []
+    data = {}
+    for item in measure_value: #蒐集工單
+        if item.measure_work_order_id not in work_order_id_all:
+            work_order_id_all.append(item.measure_work_order_id)
+            data['work_order'] = item.measure_work_order.sor_no
+            data['project_name'] = item.measure_project.project_name
+            data['measure_man'] = item.measure_man
+            data['founder_name'] = item.measure_project.founder_name
+            data['measure_time'] = item.measure_time
+            data['create_time'] = item.time_now
+            data['number_of_parts'] = item.measure_work_order.number_of_parts
+            data['work_order_id'] = item.measure_work_order.id
+            print(data)
+            work_order_all.append(data)
+            data = {}
+    print(work_order_all)
+            # print(item.measure_work_order_id)
+    return render(request, 'measure_work_order_data_display/work_order_main.html', locals())
+
+def work_order_measure_data_form(request, id):
+    project_id = models.measurement_work_order.objects.get(id=id).project_measure_id
+    project_image = models.project.objects.get(id=project_id).project_image
+    return render(request, 'measure_work_order_data_display/work_order_data_display.html', locals())
+# 2021
 
 def measure_tool(request):
     measure_tool_form = forms.measure_tool()
@@ -268,7 +484,6 @@ def measure_tool(request):
         measure_tool_form = forms.measure_tool(request.POST)
         if measure_tool_form.is_valid():
             measure_tool_form.save()
-            print('ok')
         return HttpResponseRedirect('/form_measure_item')
     return render(request, 'form/form_measure_tool.html', locals())
 
@@ -293,6 +508,8 @@ def measure_item(request):
         return HttpResponseRedirect('/form_measure_item')
     # except:pass
     return render(request, 'form/form_measure_item.html', locals())
+
+
 
 
 def test(requset):
@@ -676,7 +893,7 @@ def display_all_measure_data_chart(request, id):
             'r_chart_avg': r_chart_avg, 'r_chart_lower': r_chart_lower, 'r_chart_upper': r_chart_upper,
             'r_chart_max': r_chart_max, 'r_chart_min': r_chart_min, 'r_chart_max_min': r_chart_max_min,
             'x_min': x_min, 'x_max': x_max, 'h_chart_range': h_chart_rang, 'h_chart_median': h_chart_median,
-            'h_group_pitch':h_group_pitch,'h_full_range':h_full_range, 'x_max_min':x_max_min
+            'h_group_pitch': h_group_pitch, 'h_full_range': h_full_range, 'x_max_min': x_max_min
         })
         print(chart_data)
         # -----------------------------------------------

@@ -1,13 +1,21 @@
 {% load static %}
 <div>
-<section>
-    <form name="my form" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <table>
-            {{ project_form.as_table }}
+    <section>
+        <table class="table" id="book-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>專案名稱</th>
+                <th>建立日期</th>
+                <th>建立人</th>
+                <th>備註</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% include 'project_banner/project_list.html' %}
+            </tbody>
         </table>
-        <input class="primary"  type="submit" value="確認">
-        <input type="reset" value="清除">
-    </form>
-</section>
+    </section>
 </div>

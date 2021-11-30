@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'mysite',
-    'widget_tweaks'
+    'widget_tweaks',
+    'django_cleanup.apps.CleanupConfig'  # 自動刪除media中照片模組
 ]
 
 MIDDLEWARE = [
@@ -83,7 +85,7 @@ WSGI_APPLICATION = 'untitled13.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'pdal-measurement',
+        'NAME': 'pdal-measurement-2021',
         'USER': 'root',
         'PASSWORD': 'rsa+0414018',
         'HOST': '163.18.69.14',
